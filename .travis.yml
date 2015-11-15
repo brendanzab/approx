@@ -9,7 +9,8 @@ rust:
 
 env:
   global:
-    # secure:
+    # See 'Giving Travis Permissions' at http://www.hoverbear.org/2015/03/07/rust-travis-github-pages/
+    secure: L3726nuCFqjayk57CKECa7skqtHCq9smZbeMinHJFBlNpFAmzp45634RKWDY6Vce3g1a2pP+h9K4xmvpZkEbeewMpivDIWvX6aOYi01hzPSj9sISGBnw9TMqay/jZcmmrtGPM/qtlONxpYkp1L8iSn/y9DjxCvV+iQl6JzK3GnNmeIrhY7PpU1Vsws3pzHy+lunQuRNZ+Fh0zbbVkwg3pUb4Ye3mwbY8w/3RVV/ZqTj3OrGy2Cx3rzcuJ40zsnpD/M+TDIs1oe7tZj1r7rf/AKqBDZGDmNSQCMPT0062e39GETSEBa7fDiEFyvZ80lPKjnojlETzktf8HjWmlK4D2gSiZubRUUB/uGu7Rc2VORJ/aDI521L3QVJ/2jMdMiifXYOKEPTozgWnNmVgxJCEy32Kd4/4MY22aFwq2lGpEX4lBMOmb0XaOpDtMdkDwyvcxNplde8GF/Z6jX5TtBe0kIEaH4UIqqEKXl6fX11aW6SeRysSMfBCix9aaIaMm+a1n1rVnfiL1EBPKfT2SbrypZ/YQilJrqYsm20srr5X7fhRBj/0oGT6myfImbHq5iTIBGFMkM783tIDo1VvIPe9D7tELajMFmXM6Pev1tPMQ2PsiXiOip28v34Og4dcKPu5KdYAdbMDWlS2lmCklRqi8n1L/aT7PToNwi+Eggmz3Wk=
 
 before_script:
   - |
