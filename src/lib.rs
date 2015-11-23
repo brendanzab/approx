@@ -60,7 +60,7 @@
 //!     x: T,
 //!     i: T,
 //! }
-//! # impl<T: ApproxEq> ApproxEq for Complex<T> {
+//! # impl<T: ApproxEq> ApproxEq for Complex<T> where T::Epsilon: Copy {
 //! #     type Epsilon = T::Epsilon;
 //! #     fn default_epsilon() -> T::Epsilon { T::default_epsilon() }
 //! #     fn default_max_relative() -> T::Epsilon { T::default_max_relative() }
@@ -86,7 +86,9 @@
 //! # #[derive(Debug)]
 //! # struct Complex<T> { x: T, i: T, }
 //! #
-//! impl<T: ApproxEq> ApproxEq for Complex<T> {
+//! impl<T: ApproxEq> ApproxEq for Complex<T> where
+//!     T::Epsilon: Copy,
+//! {
 //!     type Epsilon = T::Epsilon;
 //!
 //!     fn default_epsilon() -> T::Epsilon {
@@ -130,8 +132,8 @@ mod macros;
 
 /// Equality comparisons based on floating point tolerances.
 pub trait ApproxEq: Sized {
-    /// Used for specifying relative comparisons. This is usually a floating point value.
-    type Epsilon: Copy;
+    /// Used for specifying relative comparisons.
+    type Epsilon;
 
     /// The default tolerance to use when testing values that are close together.
     ///
