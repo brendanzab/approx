@@ -296,7 +296,7 @@ impl<'a, T> Relative<'a, T> where T: ApproxEq {
     ///
     /// ```rust
     /// use std::f64;
-    /// use approx::builders::Relative;
+    /// use approx::Relative;
     ///
     /// Relative::new(&1.0, &1.0).eq();
     /// Relative::new(&1.0, &1.0).epsilon(f64::EPSILON).eq();
@@ -358,7 +358,7 @@ impl<'a, T> Ulps<'a, T> where T: ApproxEq {
     ///
     /// ```rust
     /// use std::f64;
-    /// use approx::builders::Ulps;
+    /// use approx::Ulps;
     ///
     /// Ulps::new(&1.0, &1.0).eq();
     /// Ulps::new(&1.0, &1.0).epsilon(f64::EPSILON).eq();
