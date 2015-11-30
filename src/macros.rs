@@ -12,51 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/// Predicate for testing the approximate equality of two values.
 #[macro_export]
 macro_rules! relative_eq {
-    ($lhs:expr, $rhs:expr, epsilon = $epsilon:expr, max_relative = $max_relative:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::relative_eq(lhs, rhs, $epsilon, $max_relative)
-    }};
-    ($lhs:expr, $rhs:expr, max_relative = $max_relative:expr, epsilon = $epsilon:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::relative_eq(lhs, rhs, $epsilon, $max_relative)
-    }};
-    ($lhs:expr, $rhs:expr, epsilon = $epsilon:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::relative_eq_with_epsilon(lhs, rhs, $epsilon)
-    }};
-    ($lhs:expr, $rhs:expr, max_relative = $max_relative:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::relative_eq_with_max(lhs, rhs, $max_relative)
+    ($lhs:expr, $rhs:expr, $($opt:ident = $opt_val:expr),+) => {{
+        $crate::Relative::new(&$lhs, &$rhs)$(.$opt($opt_val))+.eq()
     }};
     ($lhs:expr, $rhs:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::default_relative_eq(lhs, rhs)
+        $crate::Relative::new(&$lhs, &$rhs).eq()
     }};
 }
 
+/// Predicate for testing the approximate inequality of two values.
 #[macro_export]
 macro_rules! relative_ne {
-    ($lhs:expr, $rhs:expr, epsilon = $epsilon:expr, max_relative = $max_relative:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::relative_ne(lhs, rhs, $epsilon, $max_relative)
-    }};
-    ($lhs:expr, $rhs:expr, max_relative = $max_relative:expr, epsilon = $epsilon:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::relative_ne(lhs, rhs, $epsilon, $max_relative)
-    }};
-    ($lhs:expr, $rhs:expr, epsilon = $epsilon:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::relative_ne_with_epsilon(lhs, rhs, $epsilon)
-    }};
-    ($lhs:expr, $rhs:expr, max_relative = $max_relative:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::relative_ne_with_max(lhs, rhs, $max_relative)
+    ($lhs:expr, $rhs:expr, $($opt:ident = $opt_val:expr),+) => {{
+        $crate::Relative::new(&$lhs, &$rhs)$(.$opt($opt_val))+.ne()
     }};
     ($lhs:expr, $rhs:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::default_relative_ne(lhs, rhs)
+        $crate::Relative::new(&$lhs, &$rhs).ne()
     }};
 }
 
@@ -144,51 +118,27 @@ macro_rules! assert_relative_ne {
 }
 
 
+/// Predicate for testing the approximate equality of two values using a maximum ULPs (Units
+/// in Last Place).
 #[macro_export]
 macro_rules! ulps_eq {
-    ($lhs:expr, $rhs:expr, epsilon = $epsilon:expr, max_ulps = $max_ulps:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::ulps_eq(lhs, rhs, $epsilon, $max_ulps)
-    }};
-    ($lhs:expr, $rhs:expr, max_ulps = $max_ulps:expr, epsilon = $epsilon:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::ulps_eq(lhs, rhs, $epsilon, $max_ulps)
-    }};
-    ($lhs:expr, $rhs:expr, epsilon = $epsilon:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::ulps_eq_with_epsilon(lhs, rhs, $epsilon)
-    }};
-    ($lhs:expr, $rhs:expr, max_ulps = $max_ulps:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::ulps_eq_with_max(lhs, rhs, $max_ulps)
+    ($lhs:expr, $rhs:expr, $($opt:ident = $opt_val:expr),+) => {{
+        $crate::Ulps::new(&$lhs, &$rhs)$(.$opt($opt_val))+.eq()
     }};
     ($lhs:expr, $rhs:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::default_ulps_eq(lhs, rhs)
+        $crate::Ulps::new(&$lhs, &$rhs).eq()
     }};
 }
 
+/// Predicate for testing the approximate inequality of two values using a maximum ULPs (Units
+/// in Last Place).
 #[macro_export]
 macro_rules! ulps_ne {
-    ($lhs:expr, $rhs:expr, epsilon = $epsilon:expr, max_ulps = $max_ulps:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::ulps_ne(lhs, rhs, $epsilon, $max_ulps)
-    }};
-    ($lhs:expr, $rhs:expr, max_ulps = $max_ulps:expr, epsilon = $epsilon:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::ulps_ne(lhs, rhs, $epsilon, $max_ulps)
-    }};
-    ($lhs:expr, $rhs:expr, epsilon = $epsilon:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::ulps_ne_with_epsilon(lhs, rhs, $epsilon)
-    }};
-    ($lhs:expr, $rhs:expr, max_ulps = $max_ulps:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::ulps_ne_with_max(lhs, rhs, $max_ulps)
+    ($lhs:expr, $rhs:expr, $($opt:ident = $opt_val:expr),+) => {{
+        $crate::Ulps::new(&$lhs, &$rhs)$(.$opt($opt_val))+.ne()
     }};
     ($lhs:expr, $rhs:expr) => {{
-        let (lhs, rhs) = (&$lhs, &$rhs);
-        $crate::macro_support::default_ulps_ne(lhs, rhs)
+        $crate::Ulps::new(&$lhs, &$rhs).ne()
     }};
 }
 
