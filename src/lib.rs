@@ -174,6 +174,7 @@ macro_rules! impl_float_relative_eq {
             #[inline]
             fn default_max_ulps() -> u32 { 4 }
 
+            #[inline]
             fn relative_eq(&self, other: &$T, epsilon: $T, max_relative: $T) -> bool {
                 // Implementation based on: [Comparing Floating Point Numbers, 2012 Edition]
                 // (https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/)
@@ -194,6 +195,7 @@ macro_rules! impl_float_relative_eq {
                 abs_diff <= largest * max_relative
             }
 
+            #[inline]
             fn ulps_eq(&self, other: &$T, epsilon: $T, max_ulps: u32) -> bool {
                 // Implementation based on: [Comparing Floating Point Numbers, 2012 Edition]
                 // (https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/)
