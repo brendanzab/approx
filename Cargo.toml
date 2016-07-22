@@ -14,3 +14,6 @@ keywords = ["math", "floating-point", "equality", "test", "assert"]
 
 [lib]
 name = "approx"
+
+[features]
+  no_std = []

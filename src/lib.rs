@@ -121,6 +121,15 @@
 //! - [What Every Computer Scientist Should Know About Floating-Point Arithmetic]
 //!   (https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html)
 
+#![cfg_attr(feature="no_std", no_std)]
+#![cfg_attr(feature="no_std", feature(core_float))]
+#[cfg(feature="no_std")]
+use core as std;
+
+#[cfg(feature="no_std")]
+#[allow(unused_imports)] // Get a warning otherwise. This seems like a bug.
+use core::num::Float;
+
 mod macros;
 
 /// Equality comparisons based on floating point tolerances.
