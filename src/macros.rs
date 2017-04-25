@@ -14,6 +14,111 @@
 
 /// Predicate for testing the approximate equality of two values.
 #[macro_export]
+macro_rules! abs_diff_eq {
+    ($lhs:expr, $rhs:expr, $($opt:ident = $opt_val:expr),+) => {{
+        $crate::AbsDiff::default()$(.$opt($opt_val))+.eq(&$lhs, &$rhs)
+    }};
+    ($lhs:expr, $rhs:expr) => {{
+        $crate::AbsDiff::default().eq(&$lhs, &$rhs)
+    }};
+}
+
+/// Predicate for testing the approximate inequality of two values.
+#[macro_export]
+macro_rules! abs_diff_ne {
+    ($lhs:expr, $rhs:expr, $($opt:ident = $opt_val:expr),+) => {{
+        $crate::AbsDiff::default()$(.$opt($opt_val))+.ne(&$lhs, &$rhs)
+    }};
+    ($lhs:expr, $rhs:expr) => {{
+        $crate::AbsDiff::default().ne(&$lhs, &$rhs)
+    }};
+}
+
+#[macro_export]
+macro_rules! assert_abs_diff_eq {
+    ($given:expr, $expected:expr) => {{
+        let (given, expected) = (&($given), &($expected));
+
+        if !abs_diff_eq!(given, expected) {
+            panic!(
+"assert_abs_diff_eq!({}, {})
+
+    left  = {:?}
+    right = {:?}
+
+",
+                stringify!($given), stringify!($expected),
+                given, expected,
+            );
+        }
+    }};
+    ($given:expr, $expected:expr, $($opt:ident = $opt_val:expr),+) => {{
+        let (given, expected) = (&($given), &($expected));
+
+        if !abs_diff_eq!(given, expected, $($opt = $opt_val),+) {
+            panic!(
+"assert_abs_diff_eq!({}, {}, {})
+
+    left  = {:?}
+    right = {:?}
+
+",
+                stringify!($given), stringify!($expected),
+                stringify!($($opt = $opt_val),+),
+                given, expected,
+            );
+        }
+    }};
+    ($given:expr, $expected:expr,) => {
+        assert_abs_diff_eq!($given, $expected)
+    };
+    ($given:expr, $expected:expr, $($opt:ident = $opt_val:expr,)+) => {
+        assert_abs_diff_eq!($given, $expected, $($opt = $opt_val),+)
+    };
+}
+
+#[macro_export]
+macro_rules! assert_abs_diff_ne {
+    ($given:expr, $expected:expr) => {{
+        let (given, expected) = (&($given), &($expected));
+
+        if !abs_diff_ne!(given, expected) {
+            panic!(
+"assert_abs_diff_ne!({}, {})
+
+    left  = {:?}
+    right = {:?}
+
+",
+                stringify!($given), stringify!($expected),
+                given, expected,
+            );
+        }
+    }};
+    ($given:expr, $expected:expr, $($opt:ident = $opt_val:expr),+) => {{
+        let (given, expected) = (&($given), &($expected));
+
+        if !abs_diff_ne!(given, expected, $($opt = $opt_val),+) {
+            panic!(
+"assert_abs_diff_ne!({}, {}, {})
+
+    left  = {:?}
+    right = {:?}
+
+",
+                stringify!($given), stringify!($expected),
+                stringify!($($opt = $opt_val),+),
+                given, expected,
+            );
+        }
+    }};
+    ($given:expr, $expected:expr,) => {
+        assert_abs_diff_ne!($given, $expected)
+    };
+}
+
+/// Predicate for testing the approximate equality of two values.
+#[macro_export]
 macro_rules! relative_eq {
     ($lhs:expr, $rhs:expr, $($opt:ident = $opt_val:expr),+) => {{
         $crate::Relative::default()$(.$opt($opt_val))+.eq(&$lhs, &$rhs)
@@ -224,3 +329,4 @@ macro_rules! assert_ulps_ne {
         assert_ulps_ne!($given, $expected)
     };
 }
+

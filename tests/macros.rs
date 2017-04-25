@@ -18,6 +18,18 @@
 extern crate approx;
 
 #[test]
+fn test_abs_diff_eq() {
+    let _: bool = abs_diff_eq!(1.0, 1.0);
+    let _: bool = abs_diff_eq!(1.0, 1.0, epsilon = 1.0);
+}
+
+#[test]
+fn test_abs_diff_ne() {
+    let _: bool = abs_diff_ne!(1.0, 1.0);
+    let _: bool = abs_diff_ne!(1.0, 1.0, epsilon = 1.0);
+}
+
+#[test]
 fn test_relative_eq() {
     let _: bool = relative_eq!(1.0, 1.0);
     let _: bool = relative_eq!(1.0, 1.0, epsilon = 1.0);
