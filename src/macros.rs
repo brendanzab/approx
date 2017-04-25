@@ -43,7 +43,7 @@ macro_rules! assert_relative_eq {
             panic!(
 "assert_relative_eq!({}, {})
 
-    left = {:?}
+    left  = {:?}
     right = {:?}
 
 ",
@@ -59,7 +59,7 @@ macro_rules! assert_relative_eq {
             panic!(
 "assert_relative_eq!({}, {}, {})
 
-    left = {:?}
+    left  = {:?}
     right = {:?}
 
 ",
@@ -86,7 +86,7 @@ macro_rules! assert_relative_ne {
             panic!(
 "assert_relative_ne!({}, {})
 
-    left = {:?}
+    left  = {:?}
     right = {:?}
 
 ",
@@ -102,7 +102,7 @@ macro_rules! assert_relative_ne {
             panic!(
 "assert_relative_ne!({}, {}, {})
 
-    left = {:?}
+    left  = {:?}
     right = {:?}
 
 ",
@@ -151,7 +151,7 @@ macro_rules! assert_ulps_eq {
             panic!(
 "assert_ulps_eq!({}, {})
 
-    left = {:?}
+    left  = {:?}
     right = {:?}
 
 ",
@@ -167,7 +167,7 @@ macro_rules! assert_ulps_eq {
             panic!(
 "assert_ulps_eq!({}, {}, {})
 
-    left = {:?}
+    left  = {:?}
     right = {:?}
 
 ",
@@ -194,7 +194,7 @@ macro_rules! assert_ulps_ne {
             panic!(
 "assert_ulps_ne!({}, {})
 
-    left = {:?}
+    left  = {:?}
     right = {:?}
 
 ",
@@ -210,7 +210,7 @@ macro_rules! assert_ulps_ne {
             panic!(
 "assert_ulps_ne!({}, {}, {})
 
-    left = {:?}
+    left  = {:?}
     right = {:?}
 
 ",
