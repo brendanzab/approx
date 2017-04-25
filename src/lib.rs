@@ -177,7 +177,7 @@ pub trait ApproxEq: Sized {
     }
 }
 
-macro_rules! impl_float_relative_eq {
+macro_rules! impl_float_approx_eq {
     ($T:ident, $U:ident) => {
         impl ApproxEq for $T {
             type Epsilon = $T;
@@ -196,19 +196,29 @@ macro_rules! impl_float_relative_eq {
                 // Implementation based on: [Comparing Floating Point Numbers, 2012 Edition]
                 // (https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/)
 
-                // Handle infinities
-                if self == other { return true; }
+                // Handle same infinities
+                if self == other {
+                    return true;
+                }
 
                 let abs_diff = $T::abs(self - other);
 
                 // For when the numbers are really close together
-                if abs_diff <= epsilon { return true };
+                if abs_diff <= epsilon {
+                    return true;
+                }
 
-                // Use a relative difference comparison
                 let abs_self = $T::abs(*self);
                 let abs_other = $T::abs(*other);
+
+                // Handle oppsite infinities
+                if abs_self == abs_other && abs_diff == abs_self {
+                    return false;
+                }
+
                 let largest = if abs_other > abs_self { abs_other } else { abs_self };
 
+                // Use a relative difference comparison
                 abs_diff <= largest * max_relative
             }
 
@@ -217,27 +227,30 @@ macro_rules! impl_float_relative_eq {
                 // Implementation based on: [Comparing Floating Point Numbers, 2012 Edition]
                 // (https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/)
 
+                let abs_diff = $T::abs(self - other);
+
                 // For when the numbers are really close together
-                if $T::abs(self - other) <= epsilon { return true }
+                if abs_diff <= epsilon {
+                    return true;
+                }
 
                 // Trivial negative sign check
                 if self.signum() != other.signum() {
-                    // Handle -0 == +0
-                    return self == other;
+                    return false;
                 }
 
+                // ULPS difference comparison
                 let int_self: $U = unsafe { std::mem::transmute(*self) };
                 let int_other: $U = unsafe { std::mem::transmute(*other) };
 
-                // ULPS difference comparison
                 $U::abs(int_self - int_other) < max_ulps as $U
             }
         }
     }
 }
 
-impl_float_relative_eq!(f32, i32);
-impl_float_relative_eq!(f64, i64);
+impl_float_approx_eq!(f32, i32);
+impl_float_approx_eq!(f64, i64);
 
 
 impl<'a, T: ApproxEq> ApproxEq for &'a T {
