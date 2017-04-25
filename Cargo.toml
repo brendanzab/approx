@@ -5,12 +5,22 @@ authors = ["Brendan Zabarauskas <bjzaba@yahoo.com.au>"]
 license = "Apache-2.0"
 description = "Approximate floating point equality comparisons and assertions."
 
-documentation = "http://brendanzab.github.io/approx"
+documentation = "https://docs.rs/approx"
 homepage = "https://github.com/brendanzab/approx"
 repository = "https://github.com/brendanzab/approx"
 readme = "README.md"
 
-keywords = ["math", "floating-point", "equality", "test", "assert"]
+keywords = [
+    "approximate",
+    "assert",
+    "comparison",
+    "equality",
+    "float",
+    "floating-point",
+    "fuzzy",
+    "math",
+    "test",
+]
 
 [lib]
 name = "approx"
