@@ -10,7 +10,17 @@ homepage = "https://github.com/brendanzab/approx"
 repository = "https://github.com/brendanzab/approx"
 readme = "README.md"
 
-keywords = ["math", "floating-point", "equality", "test", "assert"]
+keywords = [
+    "approximate",
+    "assert",
+    "comparison",
+    "equality",
+    "float",
+    "floating-point",
+    "fuzzy",
+    "math",
+    "test",
+]
 
 [lib]
 name = "approx"
