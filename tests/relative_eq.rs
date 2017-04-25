@@ -78,16 +78,19 @@ mod test_f32 {
         assert_relative_ne!(0.0f32, 0.000001f32);
         assert_relative_ne!(-0.000001f32, 0.0f32);
         assert_relative_ne!(0.0f32, -0.000001f32);
+    }
 
-        assert_relative_eq!(0.0f32, 1e-40f32, max_relative = 0.01f32);
-        assert_relative_eq!(1e-40f32, 0.0f32, max_relative = 0.01f32);
-        assert_relative_eq!(0.0f32, -1e-40f32, max_relative = 0.1f32);
-        assert_relative_eq!(-1e-40f32, 0.0f32, max_relative = 0.1f32);
+    #[test]
+    fn test_epsilon() {
+        assert_relative_eq!(0.0f32, 1e-40f32, epsilon = 1e-40f32);
+        assert_relative_eq!(1e-40f32, 0.0f32, epsilon = 1e-40f32);
+        assert_relative_eq!(0.0f32, -1e-40f32, epsilon = 1e-40f32);
+        assert_relative_eq!(-1e-40f32, 0.0f32, epsilon = 1e-40f32);
 
-        // assert_relative_ne!(1e-40f32, 0.0f32, max_relative = 0.000001f32);
-        // assert_relative_ne!(0.0f32, 1e-40f32, max_relative = 0.000001f32);
-        // assert_relative_ne!(-1e-40f32, 0.0f32, max_relative = 0.00000001f32);
-        // assert_relative_ne!(0.0f32, -1e-40f32, max_relative = 0.00000001f32);
+        assert_relative_ne!(1e-40f32, 0.0f32, epsilon = 1e-41f32);
+        assert_relative_ne!(0.0f32, 1e-40f32, epsilon = 1e-41f32);
+        assert_relative_ne!(-1e-40f32, 0.0f32, epsilon = 1e-41f32);
+        assert_relative_ne!(0.0f32, -1e-40f32, epsilon = 1e-41f32);
     }
 
     #[test]
@@ -224,17 +227,21 @@ mod test_f64 {
         assert_relative_ne!(0.0f64, 0.000000000000001f64);
         assert_relative_ne!(-0.000000000000001f64, 0.0f64);
         assert_relative_ne!(0.0f64, -0.000000000000001f64);
-
-        assert_relative_eq!(0.0f64, 1e-40f64, max_relative = 0.01f64);
-        assert_relative_eq!(1e-40f64, 0.0f64, max_relative = 0.01f64);
-        assert_relative_eq!(0.0f64, -1e-40f64, max_relative = 0.1f64);
-        assert_relative_eq!(-1e-40f64, 0.0f64, max_relative = 0.1f64);
-
-        // assert_relative_ne!(1e-40f64, 0.0f64, max_relative = 0.000001f64);
-        // assert_relative_ne!(0.0f64, 1e-40f64, max_relative = 0.000001f64);
-        // assert_relative_ne!(-1e-40f64, 0.0f64, max_relative = 0.00000001f64);
-        // assert_relative_ne!(0.0f64, -1e-40f64, max_relative = 0.00000001f64);
     }
+
+    #[test]
+    fn test_epsilon() {
+        assert_relative_eq!(0.0f64, 1e-40f64, epsilon = 1e-40f64);
+        assert_relative_eq!(1e-40f64, 0.0f64, epsilon = 1e-40f64);
+        assert_relative_eq!(0.0f64, -1e-40f64, epsilon = 1e-40f64);
+        assert_relative_eq!(-1e-40f64, 0.0f64, epsilon = 1e-40f64);
+
+        assert_relative_ne!(1e-40f64, 0.0f64, epsilon = 1e-41f64);
+        assert_relative_ne!(0.0f64, 1e-40f64, epsilon = 1e-41f64);
+        assert_relative_ne!(-1e-40f64, 0.0f64, epsilon = 1e-41f64);
+        assert_relative_ne!(0.0f64, -1e-40f64, epsilon = 1e-41f64);
+    }
+
 
     #[test]
     fn test_max() {

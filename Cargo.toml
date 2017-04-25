@@ -16,4 +16,4 @@ keywords = ["math", "floating-point", "equality", "test", "assert"]
 name = "approx"
 
 [features]
-  no_std = []
+no_std = []
