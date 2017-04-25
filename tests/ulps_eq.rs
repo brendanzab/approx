@@ -107,7 +107,7 @@ mod test_f32 {
     fn test_infinity() {
         assert_ulps_eq!(f32::INFINITY, f32::INFINITY);
         assert_ulps_eq!(f32::NEG_INFINITY, f32::NEG_INFINITY);
-        // assert_ulps_eq!(f32::NEG_INFINITY, f32::INFINITY);
+        assert_ulps_ne!(f32::NEG_INFINITY, f32::INFINITY);
         assert_ulps_eq!(f32::INFINITY, f32::MAX);
         assert_ulps_eq!(f32::NEG_INFINITY, -f32::MAX);
     }
@@ -256,7 +256,7 @@ mod test_f64 {
     fn test_infinity() {
         assert_ulps_eq!(f64::INFINITY, f64::INFINITY);
         assert_ulps_eq!(f64::NEG_INFINITY, f64::NEG_INFINITY);
-        // assert_ulps_eq!(f64::NEG_INFINITY, f64::INFINITY);
+        assert_ulps_ne!(f64::NEG_INFINITY, f64::INFINITY);
         assert_ulps_eq!(f64::INFINITY, f64::MAX);
         assert_ulps_eq!(f64::NEG_INFINITY, -f64::MAX);
     }

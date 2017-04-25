@@ -153,10 +153,18 @@ pub trait ApproxEq: Sized {
     fn default_max_ulps() -> u32;
 
     /// A test for equality that uses a relative comparison if the values are far apart.
-    fn relative_eq(&self, other: &Self, epsilon: Self::Epsilon, max_relative: Self::Epsilon) -> bool;
+    fn relative_eq(&self,
+                   other: &Self,
+                   epsilon: Self::Epsilon,
+                   max_relative: Self::Epsilon)
+                   -> bool;
 
     /// The inverse of `ApproxEq::relative_eq`.
-    fn relative_ne(&self, other: &Self, epsilon: Self::Epsilon, max_relative: Self::Epsilon) -> bool {
+    fn relative_ne(&self,
+                   other: &Self,
+                   epsilon: Self::Epsilon,
+                   max_relative: Self::Epsilon)
+                   -> bool {
         !Self::relative_eq(self, other, epsilon, max_relative)
     }
 
@@ -169,7 +177,7 @@ pub trait ApproxEq: Sized {
     }
 }
 
-macro_rules! impl_float_relative_eq {
+macro_rules! impl_float_approx_eq {
     ($T:ident, $U:ident) => {
         impl ApproxEq for $T {
             type Epsilon = $T;
@@ -188,19 +196,29 @@ macro_rules! impl_float_relative_eq {
                 // Implementation based on: [Comparing Floating Point Numbers, 2012 Edition]
                 // (https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/)
 
-                // Handle infinities
-                if self == other { return true; }
+                // Handle same infinities
+                if self == other {
+                    return true;
+                }
 
                 let abs_diff = $T::abs(self - other);
 
                 // For when the numbers are really close together
-                if abs_diff <= epsilon { return true };
+                if abs_diff <= epsilon {
+                    return true;
+                }
 
-                // Use a relative difference comparison
                 let abs_self = $T::abs(*self);
                 let abs_other = $T::abs(*other);
+
+                // Handle oppsite infinities
+                if abs_self == abs_other && abs_diff == abs_self {
+                    return false;
+                }
+
                 let largest = if abs_other > abs_self { abs_other } else { abs_self };
 
+                // Use a relative difference comparison
                 abs_diff <= largest * max_relative
             }
 
@@ -209,27 +227,30 @@ macro_rules! impl_float_relative_eq {
                 // Implementation based on: [Comparing Floating Point Numbers, 2012 Edition]
                 // (https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/)
 
+                let abs_diff = $T::abs(self - other);
+
                 // For when the numbers are really close together
-                if $T::abs(self - other) <= epsilon { return true }
+                if abs_diff <= epsilon {
+                    return true;
+                }
 
                 // Trivial negative sign check
                 if self.signum() != other.signum() {
-                    // Handle -0 == +0
-                    return self == other;
+                    return false;
                 }
 
+                // ULPS difference comparison
                 let int_self: $U = unsafe { std::mem::transmute(*self) };
                 let int_other: $U = unsafe { std::mem::transmute(*other) };
 
-                // ULPS difference comparison
                 $U::abs(int_self - int_other) < max_ulps as $U
             }
         }
     }
 }
 
-impl_float_relative_eq!(f32, i32);
-impl_float_relative_eq!(f64, i64);
+impl_float_approx_eq!(f32, i32);
+impl_float_approx_eq!(f64, i64);
 
 
 impl<'a, T: ApproxEq> ApproxEq for &'a T {
@@ -280,7 +301,11 @@ impl<'a, T: ApproxEq> ApproxEq for &'a mut T {
     }
 
     #[inline]
-    fn relative_eq(&self, other: &&'a mut T, epsilon: T::Epsilon, max_relative: T::Epsilon) -> bool {
+    fn relative_eq(&self,
+                   other: &&'a mut T,
+                   epsilon: T::Epsilon,
+                   max_relative: T::Epsilon)
+                   -> bool {
         T::relative_eq(*self, *other, epsilon, max_relative)
     }
 
@@ -302,7 +327,9 @@ pub struct Relative<'a, T: 'a + ApproxEq> {
     pub max_relative: T::Epsilon,
 }
 
-impl<'a, T> Relative<'a, T> where T: ApproxEq {
+impl<'a, T> Relative<'a, T>
+    where T: ApproxEq
+{
     /// The beginning of a chained equality expression, using a relative based comparison.
     ///
     /// ```rust
@@ -328,27 +355,31 @@ impl<'a, T> Relative<'a, T> where T: ApproxEq {
     /// Replace the epsilon value with the one specified.
     #[inline]
     pub fn epsilon(self, epsilon: T::Epsilon) -> Relative<'a, T> {
-        Relative { epsilon: epsilon, ..self }
+        Relative {
+            epsilon: epsilon,
+            ..self
+        }
     }
 
     /// Replace the maximum relative value with the one specified.
     #[inline]
     pub fn max_relative(self, max_relative: T::Epsilon) -> Relative<'a, T> {
-        Relative { max_relative: max_relative, ..self }
+        Relative {
+            max_relative: max_relative,
+            ..self
+        }
     }
 
     /// Peform the equality comparison
     #[inline]
     pub fn eq(self) -> bool {
-        let Relative { lhs, rhs, epsilon, max_relative } = self;
-        T::relative_eq(lhs, rhs, epsilon, max_relative)
+        T::relative_eq(self.lhs, self.rhs, self.epsilon, self.max_relative)
     }
 
     /// Peform the inequality comparison
     #[inline]
     pub fn ne(self) -> bool {
-        let Relative { lhs, rhs, epsilon, max_relative } = self;
-        T::relative_ne(lhs, rhs, epsilon, max_relative)
+        T::relative_ne(self.lhs, self.rhs, self.epsilon, self.max_relative)
     }
 }
 
@@ -364,7 +395,9 @@ pub struct Ulps<'a, T: 'a + ApproxEq> {
     pub max_ulps: u32,
 }
 
-impl<'a, T> Ulps<'a, T> where T: ApproxEq {
+impl<'a, T> Ulps<'a, T>
+    where T: ApproxEq
+{
     /// The beginning of a chained equality expression, using an ULPs based comparison.
     ///
     /// ```rust
@@ -390,26 +423,30 @@ impl<'a, T> Ulps<'a, T> where T: ApproxEq {
     /// Replace the epsilon value with the one specified.
     #[inline]
     pub fn epsilon(self, epsilon: T::Epsilon) -> Ulps<'a, T> {
-        Ulps { epsilon: epsilon, ..self }
+        Ulps {
+            epsilon: epsilon,
+            ..self
+        }
     }
 
     /// Replace the max ulps value with the one specified.
     #[inline]
-    pub fn max_ulps(self, max_ulps:u32) -> Ulps<'a, T> {
-        Ulps { max_ulps: max_ulps, ..self }
+    pub fn max_ulps(self, max_ulps: u32) -> Ulps<'a, T> {
+        Ulps {
+            max_ulps: max_ulps,
+            ..self
+        }
     }
 
     /// Peform the equality comparison
     #[inline]
     pub fn eq(self) -> bool {
-        let Ulps { lhs, rhs, epsilon, max_ulps } = self;
-        T::ulps_eq(lhs, rhs, epsilon, max_ulps)
+        T::ulps_eq(self.lhs, self.rhs, self.epsilon, self.max_ulps)
     }
 
     /// Peform the inequality comparison
     #[inline]
     pub fn ne(self) -> bool {
-        let Ulps { lhs, rhs, epsilon, max_ulps } = self;
-        T::ulps_ne(lhs, rhs, epsilon, max_ulps)
+        T::ulps_ne(self.lhs, self.rhs, self.epsilon, self.max_ulps)
     }
 }
