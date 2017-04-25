@@ -315,46 +315,49 @@ impl<'a, T: ApproxEq> ApproxEq for &'a mut T {
     }
 }
 
-/// The requisite parameters for testing for approximate equality.
-pub struct Relative<'a, T: 'a + ApproxEq> {
-    /// The left-hand side of the approximate equality comparison.
-    pub lhs: &'a T,
-    /// The right-hand side of the approximate equality comparison.
-    pub rhs: &'a T,
+/// The requisite parameters for testing for approximate equality using a
+/// relative based comparison.
+///
+/// This is not normally used directly, rather via the
+/// `assert_relative_{eq|ne}!` and `relative_{eq|ne}!` macros.
+///
+/// # Example
+///
+/// ```rust
+/// use std::f64;
+/// use approx::Relative;
+///
+/// Relative::default().eq(&1.0, &1.0);
+/// Relative::default().epsilon(f64::EPSILON).eq(&1.0, &1.0);
+/// Relative::default().max_relative(1.0).eq(&1.0, &1.0);
+/// Relative::default().epsilon(f64::EPSILON).max_relative(1.0).eq(&1.0, &1.0);
+/// Relative::default().max_relative(1.0).epsilon(f64::EPSILON).eq(&1.0, &1.0);
+/// ```
+pub struct Relative<T: ApproxEq> {
     /// The tolerance to use when testing values that are close together.
     pub epsilon: T::Epsilon,
     /// The relative tolerance for testing values that are far-apart.
     pub max_relative: T::Epsilon,
 }
 
-impl<'a, T> Relative<'a, T>
+impl<T> Default for Relative<T>
     where T: ApproxEq
 {
-    /// The beginning of a chained equality expression, using a relative based comparison.
-    ///
-    /// ```rust
-    /// use std::f64;
-    /// use approx::Relative;
-    ///
-    /// Relative::new(&1.0, &1.0).eq();
-    /// Relative::new(&1.0, &1.0).epsilon(f64::EPSILON).eq();
-    /// Relative::new(&1.0, &1.0).max_relative(1.0).eq();
-    /// Relative::new(&1.0, &1.0).epsilon(f64::EPSILON).max_relative(1.0).eq();
-    /// Relative::new(&1.0, &1.0).max_relative(1.0).epsilon(f64::EPSILON).eq();
-    /// ```
     #[inline]
-    pub fn new(lhs: &'a T, rhs: &'a T) -> Relative<'a, T> {
+    fn default() -> Relative<T> {
         Relative {
-            lhs: lhs,
-            rhs: rhs,
             epsilon: T::default_epsilon(),
             max_relative: T::default_max_relative(),
         }
     }
+}
 
+impl<T> Relative<T>
+    where T: ApproxEq
+{
     /// Replace the epsilon value with the one specified.
     #[inline]
-    pub fn epsilon(self, epsilon: T::Epsilon) -> Relative<'a, T> {
+    pub fn epsilon(self, epsilon: T::Epsilon) -> Relative<T> {
         Relative {
             epsilon: epsilon,
             ..self
@@ -363,7 +366,7 @@ impl<'a, T> Relative<'a, T>
 
     /// Replace the maximum relative value with the one specified.
     #[inline]
-    pub fn max_relative(self, max_relative: T::Epsilon) -> Relative<'a, T> {
+    pub fn max_relative(self, max_relative: T::Epsilon) -> Relative<T> {
         Relative {
             max_relative: max_relative,
             ..self
@@ -372,57 +375,60 @@ impl<'a, T> Relative<'a, T>
 
     /// Peform the equality comparison
     #[inline]
-    pub fn eq(self) -> bool {
-        T::relative_eq(self.lhs, self.rhs, self.epsilon, self.max_relative)
+    pub fn eq(self, lhs: &T, rhs: &T) -> bool {
+        T::relative_eq(lhs, rhs, self.epsilon, self.max_relative)
     }
 
     /// Peform the inequality comparison
     #[inline]
-    pub fn ne(self) -> bool {
-        T::relative_ne(self.lhs, self.rhs, self.epsilon, self.max_relative)
+    pub fn ne(self, lhs: &T, rhs: &T) -> bool {
+        T::relative_ne(lhs, rhs, self.epsilon, self.max_relative)
     }
 }
 
-/// The requisite parameters for testing for approximate equality.
-pub struct Ulps<'a, T: 'a + ApproxEq> {
-    /// The left-hand side of the approximate equality comparison.
-    pub lhs: &'a T,
-    /// The right-hand side of the approximate equality comparison.
-    pub rhs: &'a T,
+/// The requisite parameters for testing for approximate equality using an ULPs
+/// based comparison.
+///
+/// This is not normally used directly, rather via the `assert_ulps_{eq|ne}!`
+/// and `ulps_{eq|ne}!` macros.
+///
+/// # Example
+///
+/// ```rust
+/// use std::f64;
+/// use approx::Ulps;
+///
+/// Ulps::default().eq(&1.0, &1.0);
+/// Ulps::default().epsilon(f64::EPSILON).eq(&1.0, &1.0);
+/// Ulps::default().max_ulps(4).eq(&1.0, &1.0);
+/// Ulps::default().epsilon(f64::EPSILON).max_ulps(4).eq(&1.0, &1.0);
+/// Ulps::default().max_ulps(4).epsilon(f64::EPSILON).eq(&1.0, &1.0);
+/// ```
+pub struct Ulps<T: ApproxEq> {
     /// The tolerance to use when testing values that are close together.
     pub epsilon: T::Epsilon,
     /// The ULPs to tolerate when testing values that are far-apart.
     pub max_ulps: u32,
 }
 
-impl<'a, T> Ulps<'a, T>
+impl<T> Default for Ulps<T>
     where T: ApproxEq
 {
-    /// The beginning of a chained equality expression, using an ULPs based comparison.
-    ///
-    /// ```rust
-    /// use std::f64;
-    /// use approx::Ulps;
-    ///
-    /// Ulps::new(&1.0, &1.0).eq();
-    /// Ulps::new(&1.0, &1.0).epsilon(f64::EPSILON).eq();
-    /// Ulps::new(&1.0, &1.0).max_ulps(4).eq();
-    /// Ulps::new(&1.0, &1.0).epsilon(f64::EPSILON).max_ulps(4).eq();
-    /// Ulps::new(&1.0, &1.0).max_ulps(4).epsilon(f64::EPSILON).eq();
-    /// ```
     #[inline]
-    pub fn new(lhs: &'a T, rhs: &'a T) -> Ulps<'a, T> {
+    fn default() -> Ulps<T> {
         Ulps {
-            lhs: lhs,
-            rhs: rhs,
             epsilon: T::default_epsilon(),
             max_ulps: T::default_max_ulps(),
         }
     }
+}
 
+impl<T> Ulps<T>
+    where T: ApproxEq
+{
     /// Replace the epsilon value with the one specified.
     #[inline]
-    pub fn epsilon(self, epsilon: T::Epsilon) -> Ulps<'a, T> {
+    pub fn epsilon(self, epsilon: T::Epsilon) -> Ulps<T> {
         Ulps {
             epsilon: epsilon,
             ..self
@@ -431,7 +437,7 @@ impl<'a, T> Ulps<'a, T>
 
     /// Replace the max ulps value with the one specified.
     #[inline]
-    pub fn max_ulps(self, max_ulps: u32) -> Ulps<'a, T> {
+    pub fn max_ulps(self, max_ulps: u32) -> Ulps<T> {
         Ulps {
             max_ulps: max_ulps,
             ..self
@@ -440,13 +446,13 @@ impl<'a, T> Ulps<'a, T>
 
     /// Peform the equality comparison
     #[inline]
-    pub fn eq(self) -> bool {
-        T::ulps_eq(self.lhs, self.rhs, self.epsilon, self.max_ulps)
+    pub fn eq(self, lhs: &T, rhs: &T) -> bool {
+        T::ulps_eq(lhs, rhs, self.epsilon, self.max_ulps)
     }
 
     /// Peform the inequality comparison
     #[inline]
-    pub fn ne(self) -> bool {
-        T::ulps_ne(self.lhs, self.rhs, self.epsilon, self.max_ulps)
+    pub fn ne(self, lhs: &T, rhs: &T) -> bool {
+        T::ulps_ne(lhs, rhs, self.epsilon, self.max_ulps)
     }
 }
