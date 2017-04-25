@@ -60,6 +60,7 @@
 //! #     fn default_epsilon() -> T::Epsilon { T::default_epsilon() }
 //! #     fn default_max_relative() -> T::Epsilon { T::default_max_relative() }
 //! #     fn default_max_ulps() -> u32 { T::default_max_ulps() }
+//! #     fn abs_diff_eq(&self, other: &Self, epsilon: T::Epsilon) -> bool { T::abs_diff_eq(&self.x, &other.x, epsilon) && T::abs_diff_eq(&self.i, &other.i, epsilon) }
 //! #     fn relative_eq(&self, other: &Self, epsilon: T::Epsilon, max_relative: T::Epsilon) -> bool { T::relative_eq(&self.x, &other.x, epsilon, max_relative) && T::relative_eq(&self.i, &other.i, epsilon, max_relative) }
 //! #     fn ulps_eq(&self, other: &Self, epsilon: T::Epsilon, max_ulps: u32) -> bool { T::ulps_eq(&self.x, &other.x, epsilon, max_ulps) && T::ulps_eq(&self.i, &other.i, epsilon, max_ulps) }
 //! # }
@@ -96,6 +97,11 @@
 //!
 //!     fn default_max_ulps() -> u32 {
 //!         T::default_max_ulps()
+//!     }
+//!
+//!     fn abs_diff_eq(&self, other: &Self, epsilon: T::Epsilon) -> bool {
+//!         T::abs_diff_eq(&self.x, &other.x, epsilon) &&
+//!         T::abs_diff_eq(&self.i, &other.i, epsilon)
 //!     }
 //!
 //!     fn relative_eq(&self, other: &Self, epsilon: T::Epsilon, max_relative: T::Epsilon) -> bool {
@@ -152,12 +158,30 @@ pub trait ApproxEq: Sized {
     /// This is used when no `max_relative` value is supplied to the `relative_eq` macro.
     fn default_max_ulps() -> u32;
 
+    /// A test for equality that uses the absolute difference to compute the approximate
+    /// equality of two numbers.
+    fn abs_diff_eq(&self,
+                   other: &Self,
+                   epsilon: Self::Epsilon)
+                   -> bool;
+
     /// A test for equality that uses a relative comparison if the values are far apart.
     fn relative_eq(&self,
                    other: &Self,
                    epsilon: Self::Epsilon,
                    max_relative: Self::Epsilon)
                    -> bool;
+
+    /// A test for equality that uses units in the last place (ULP) if the values are far apart.
+    fn ulps_eq(&self, other: &Self, epsilon: Self::Epsilon, max_ulps: u32) -> bool;
+
+    /// The inverse of `ApproxEq::abs_diff_eq`.
+    fn abs_diff_ne(&self,
+                   other: &Self,
+                   epsilon: Self::Epsilon)
+                   -> bool {
+        !Self::abs_diff_eq(self, other, epsilon)
+    }
 
     /// The inverse of `ApproxEq::relative_eq`.
     fn relative_ne(&self,
@@ -167,9 +191,6 @@ pub trait ApproxEq: Sized {
                    -> bool {
         !Self::relative_eq(self, other, epsilon, max_relative)
     }
-
-    /// A test for equality that uses units in the last place (ULP) if the values are far apart.
-    fn ulps_eq(&self, other: &Self, epsilon: Self::Epsilon, max_ulps: u32) -> bool;
 
     /// The inverse of `ApproxEq::ulps_eq`.
     fn ulps_ne(&self, other: &Self, epsilon: Self::Epsilon, max_ulps: u32) -> bool {
@@ -190,6 +211,11 @@ macro_rules! impl_float_approx_eq {
 
             #[inline]
             fn default_max_ulps() -> u32 { 4 }
+
+            #[inline]
+            fn abs_diff_eq(&self, other: &$T, epsilon: $T) -> bool {
+                $T::abs(self - other) <= epsilon
+            }
 
             #[inline]
             fn relative_eq(&self, other: &$T, epsilon: $T, max_relative: $T) -> bool {
@@ -227,10 +253,8 @@ macro_rules! impl_float_approx_eq {
                 // Implementation based on: [Comparing Floating Point Numbers, 2012 Edition]
                 // (https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/)
 
-                let abs_diff = $T::abs(self - other);
-
                 // For when the numbers are really close together
-                if abs_diff <= epsilon {
+                if $T::abs_diff_eq(self, other, epsilon) {
                     return true;
                 }
 
@@ -272,6 +296,11 @@ impl<'a, T: ApproxEq> ApproxEq for &'a T {
     }
 
     #[inline]
+    fn abs_diff_eq(&self, other: &&'a T, epsilon: T::Epsilon) -> bool {
+        T::abs_diff_eq(*self, *other, epsilon)
+    }
+
+    #[inline]
     fn relative_eq(&self, other: &&'a T, epsilon: T::Epsilon, max_relative: T::Epsilon) -> bool {
         T::relative_eq(*self, *other, epsilon, max_relative)
     }
@@ -301,6 +330,11 @@ impl<'a, T: ApproxEq> ApproxEq for &'a mut T {
     }
 
     #[inline]
+    fn abs_diff_eq(&self, other: &&'a mut T, epsilon: T::Epsilon) -> bool {
+        T::abs_diff_eq(*self, *other, epsilon)
+    }
+
+    #[inline]
     fn relative_eq(&self,
                    other: &&'a mut T,
                    epsilon: T::Epsilon,
@@ -312,6 +346,62 @@ impl<'a, T: ApproxEq> ApproxEq for &'a mut T {
     #[inline]
     fn ulps_eq(&self, other: &&'a mut T, epsilon: T::Epsilon, max_ulps: u32) -> bool {
         T::ulps_eq(*self, *other, epsilon, max_ulps)
+    }
+}
+
+/// The requisite parameters for testing for approximate equality using a
+/// absolute difference based comparison.
+///
+/// This is not normally used directly, rather via the
+/// `assert_abs_diff_{eq|ne}!` and `abs_diff_{eq|ne}!` macros.
+///
+/// # Example
+///
+/// ```rust
+/// use std::f64;
+/// use approx::AbsDiff;
+///
+/// AbsDiff::default().eq(&1.0, &1.0);
+/// AbsDiff::default().epsilon(f64::EPSILON).eq(&1.0, &1.0);
+/// ```
+pub struct AbsDiff<T: ApproxEq> {
+    /// The tolerance to use when testing values that are close together.
+    pub epsilon: T::Epsilon,
+}
+
+impl<T> Default for AbsDiff<T>
+    where T: ApproxEq
+{
+    #[inline]
+    fn default() -> AbsDiff<T> {
+        AbsDiff {
+            epsilon: T::default_epsilon(),
+        }
+    }
+}
+
+impl<T> AbsDiff<T>
+    where T: ApproxEq
+{
+    /// Replace the epsilon value with the one specified.
+    #[inline]
+    pub fn epsilon(self, epsilon: T::Epsilon) -> AbsDiff<T> {
+        AbsDiff {
+            epsilon: epsilon,
+            ..self
+        }
+    }
+
+    /// Peform the equality comparison
+    #[inline]
+    pub fn eq(self, lhs: &T, rhs: &T) -> bool {
+        T::abs_diff_eq(lhs, rhs, self.epsilon)
+    }
+
+    /// Peform the inequality comparison
+    #[inline]
+    pub fn ne(self, lhs: &T, rhs: &T) -> bool {
+        T::abs_diff_ne(lhs, rhs, self.epsilon)
     }
 }
 
