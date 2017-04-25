@@ -16,10 +16,10 @@
 #[macro_export]
 macro_rules! relative_eq {
     ($lhs:expr, $rhs:expr, $($opt:ident = $opt_val:expr),+) => {{
-        $crate::Relative::new(&$lhs, &$rhs)$(.$opt($opt_val))+.eq()
+        $crate::Relative::default()$(.$opt($opt_val))+.eq(&$lhs, &$rhs)
     }};
     ($lhs:expr, $rhs:expr) => {{
-        $crate::Relative::new(&$lhs, &$rhs).eq()
+        $crate::Relative::default().eq(&$lhs, &$rhs)
     }};
 }
 
@@ -27,10 +27,10 @@ macro_rules! relative_eq {
 #[macro_export]
 macro_rules! relative_ne {
     ($lhs:expr, $rhs:expr, $($opt:ident = $opt_val:expr),+) => {{
-        $crate::Relative::new(&$lhs, &$rhs)$(.$opt($opt_val))+.ne()
+        $crate::Relative::default()$(.$opt($opt_val))+.ne(&$lhs, &$rhs)
     }};
     ($lhs:expr, $rhs:expr) => {{
-        $crate::Relative::new(&$lhs, &$rhs).ne()
+        $crate::Relative::default().ne(&$lhs, &$rhs)
     }};
 }
 
@@ -123,10 +123,10 @@ macro_rules! assert_relative_ne {
 #[macro_export]
 macro_rules! ulps_eq {
     ($lhs:expr, $rhs:expr, $($opt:ident = $opt_val:expr),+) => {{
-        $crate::Ulps::new(&$lhs, &$rhs)$(.$opt($opt_val))+.eq()
+        $crate::Ulps::default()$(.$opt($opt_val))+.eq(&$lhs, &$rhs)
     }};
     ($lhs:expr, $rhs:expr) => {{
-        $crate::Ulps::new(&$lhs, &$rhs).eq()
+        $crate::Ulps::default().eq(&$lhs, &$rhs)
     }};
 }
 
@@ -135,10 +135,10 @@ macro_rules! ulps_eq {
 #[macro_export]
 macro_rules! ulps_ne {
     ($lhs:expr, $rhs:expr, $($opt:ident = $opt_val:expr),+) => {{
-        $crate::Ulps::new(&$lhs, &$rhs)$(.$opt($opt_val))+.ne()
+        $crate::Ulps::default()$(.$opt($opt_val))+.ne(&$lhs, &$rhs)
     }};
     ($lhs:expr, $rhs:expr) => {{
-        $crate::Ulps::new(&$lhs, &$rhs).ne()
+        $crate::Ulps::default().ne(&$lhs, &$rhs)
     }};
 }
 
