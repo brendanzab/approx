@@ -22,9 +22,13 @@
 //! ```rust
 //! #[macro_use]
 //! extern crate approx;
+//!
 //! use std::f64;
 //!
 //! # fn main() {
+//! abs_diff_eq!(1.0, 1.0);
+//! abs_diff_eq!(1.0, 1.0, epsilon = f64::EPSILON);
+//!
 //! relative_eq!(1.0, 1.0);
 //! relative_eq!(1.0, 1.0, epsilon = f64::EPSILON);
 //! relative_eq!(1.0, 1.0, max_relative = 1.0);
@@ -49,19 +53,24 @@
 //! ```rust
 //! #[macro_use]
 //! extern crate approx;
-//! # use approx::ApproxEq;
-//! #[derive(Debug)]
+//! # use approx::{AbsDiffEq, RelativeEq, UlpsEq};
+//!
+//! #[derive(Debug, PartialEq)]
 //! struct Complex<T> {
 //!     x: T,
 //!     i: T,
 //! }
-//! # impl<T: ApproxEq> ApproxEq for Complex<T> where T::Epsilon: Copy {
+//! # impl<T: AbsDiffEq> AbsDiffEq for Complex<T> where T::Epsilon: Copy {
 //! #     type Epsilon = T::Epsilon;
 //! #     fn default_epsilon() -> T::Epsilon { T::default_epsilon() }
-//! #     fn default_max_relative() -> T::Epsilon { T::default_max_relative() }
-//! #     fn default_max_ulps() -> u32 { T::default_max_ulps() }
 //! #     fn abs_diff_eq(&self, other: &Self, epsilon: T::Epsilon) -> bool { T::abs_diff_eq(&self.x, &other.x, epsilon) && T::abs_diff_eq(&self.i, &other.i, epsilon) }
+//! # }
+//! # impl<T: RelativeEq> RelativeEq for Complex<T> where T::Epsilon: Copy {
+//! #     fn default_max_relative() -> T::Epsilon { T::default_max_relative() }
 //! #     fn relative_eq(&self, other: &Self, epsilon: T::Epsilon, max_relative: T::Epsilon) -> bool { T::relative_eq(&self.x, &other.x, epsilon, max_relative) && T::relative_eq(&self.i, &other.i, epsilon, max_relative) }
+//! # }
+//! # impl<T: UlpsEq> UlpsEq for Complex<T> where T::Epsilon: Copy {
+//! #     fn default_max_ulps() -> u32 { T::default_max_ulps() }
 //! #     fn ulps_eq(&self, other: &Self, epsilon: T::Epsilon, max_ulps: u32) -> bool { T::ulps_eq(&self.x, &other.x, epsilon, max_ulps) && T::ulps_eq(&self.i, &other.i, epsilon, max_ulps) }
 //! # }
 //!
@@ -73,16 +82,16 @@
 //! # }
 //! ```
 //!
-//! To do this we can implement `ApproxEq` generically in terms of a type parameter that also
-//! implements `ApproxEq`. This means that we can make comparisons for either `Complex<f32>` or
-//! `Complex<f64>`:
+//! To do this we can implement `AbsDiffEq`, `RelativeEq` and `UlpsEq` generically in terms of a
+//! type parameter that also implements `ApproxEq`, `RelativeEq` and `UlpsEq` respectively. This
+//! means that we can make comparisons for either `Complex<f32>` or `Complex<f64>`:
 //!
 //! ```rust
-//! # use approx::ApproxEq;
-//! # #[derive(Debug)]
+//! # use approx::{AbsDiffEq, RelativeEq, UlpsEq};
+//! # #[derive(Debug, PartialEq)]
 //! # struct Complex<T> { x: T, i: T, }
 //! #
-//! impl<T: ApproxEq> ApproxEq for Complex<T> where
+//! impl<T: AbsDiffEq> AbsDiffEq for Complex<T> where
 //!     T::Epsilon: Copy,
 //! {
 //!     type Epsilon = T::Epsilon;
@@ -91,22 +100,30 @@
 //!         T::default_epsilon()
 //!     }
 //!
-//!     fn default_max_relative() -> T::Epsilon {
-//!         T::default_max_relative()
-//!     }
-//!
-//!     fn default_max_ulps() -> u32 {
-//!         T::default_max_ulps()
-//!     }
-//!
 //!     fn abs_diff_eq(&self, other: &Self, epsilon: T::Epsilon) -> bool {
 //!         T::abs_diff_eq(&self.x, &other.x, epsilon) &&
 //!         T::abs_diff_eq(&self.i, &other.i, epsilon)
+//!     }
+//! }
+//!
+//! impl<T: RelativeEq> RelativeEq for Complex<T> where
+//!     T::Epsilon: Copy,
+//! {
+//!     fn default_max_relative() -> T::Epsilon {
+//!         T::default_max_relative()
 //!     }
 //!
 //!     fn relative_eq(&self, other: &Self, epsilon: T::Epsilon, max_relative: T::Epsilon) -> bool {
 //!         T::relative_eq(&self.x, &other.x, epsilon, max_relative) &&
 //!         T::relative_eq(&self.i, &other.i, epsilon, max_relative)
+//!     }
+//! }
+//!
+//! impl<T: UlpsEq> UlpsEq for Complex<T> where
+//!     T::Epsilon: Copy,
+//! {
+//!     fn default_max_ulps() -> u32 {
+//!         T::default_max_ulps()
 //!     }
 //!
 //!     fn ulps_eq(&self, other: &Self, epsilon: T::Epsilon, max_ulps: u32) -> bool {
@@ -133,30 +150,20 @@
 use core as std;
 
 #[cfg(feature="no_std")]
-#[allow(unused_imports)] // Get a warning otherwise. This seems like a bug.
 use core::num::Float;
 
 mod macros;
 
-/// Equality comparisons based on floating point tolerances.
-pub trait ApproxEq: Sized {
+/// Equality that is defined using the absolute difference of two numbers.
+pub trait AbsDiffEq: PartialEq {
     /// Used for specifying relative comparisons.
     type Epsilon;
 
     /// The default tolerance to use when testing values that are close together.
     ///
-    /// This is used when no `epsilon` value is supplied to the `relative_eq` or `ulps_eq` macros.
+    /// This is used when no `epsilon` value is supplied to the `abs_diff_eq!`, `relative_eq!`, or
+    /// `ulps_eq!` macros.
     fn default_epsilon() -> Self::Epsilon;
-
-    /// The default relative tolerance for testing values that are far-apart.
-    ///
-    /// This is used when no `max_relative` value is supplied to the `relative_eq` macro.
-    fn default_max_relative() -> Self::Epsilon;
-
-    /// The default ULPs to tolerate when testing values that are far-apart.
-    ///
-    /// This is used when no `max_relative` value is supplied to the `relative_eq` macro.
-    fn default_max_ulps() -> u32;
 
     /// A test for equality that uses the absolute difference to compute the approximate
     /// equality of two numbers.
@@ -165,16 +172,6 @@ pub trait ApproxEq: Sized {
                    epsilon: Self::Epsilon)
                    -> bool;
 
-    /// A test for equality that uses a relative comparison if the values are far apart.
-    fn relative_eq(&self,
-                   other: &Self,
-                   epsilon: Self::Epsilon,
-                   max_relative: Self::Epsilon)
-                   -> bool;
-
-    /// A test for equality that uses units in the last place (ULP) if the values are far apart.
-    fn ulps_eq(&self, other: &Self, epsilon: Self::Epsilon, max_ulps: u32) -> bool;
-
     /// The inverse of `ApproxEq::abs_diff_eq`.
     fn abs_diff_ne(&self,
                    other: &Self,
@@ -182,6 +179,96 @@ pub trait ApproxEq: Sized {
                    -> bool {
         !Self::abs_diff_eq(self, other, epsilon)
     }
+}
+
+impl<'a, T: AbsDiffEq> AbsDiffEq for &'a T {
+    type Epsilon = T::Epsilon;
+
+    #[inline]
+    fn default_epsilon() -> Self::Epsilon {
+        T::default_epsilon()
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &&'a T, epsilon: T::Epsilon) -> bool {
+        T::abs_diff_eq(*self, *other, epsilon)
+    }
+}
+
+impl<'a, T: AbsDiffEq> AbsDiffEq for &'a mut T {
+    type Epsilon = T::Epsilon;
+
+    #[inline]
+    fn default_epsilon() -> Self::Epsilon {
+        T::default_epsilon()
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &&'a mut T, epsilon: T::Epsilon) -> bool {
+        T::abs_diff_eq(*self, *other, epsilon)
+    }
+}
+
+macro_rules! impl_unsigned_abs_diff_eq {
+    ($T:ident, $default_epsilon:expr) => {
+        impl AbsDiffEq for $T {
+            type Epsilon = $T;
+
+            #[inline]
+            fn default_epsilon() -> $T { $default_epsilon }
+
+            #[inline]
+            fn abs_diff_eq(&self, other: &$T, epsilon: $T) -> bool {
+                (if self > other { self - other } else { other - self }) <= epsilon
+            }
+        }
+    }
+}
+
+impl_unsigned_abs_diff_eq!(u8, 0);
+impl_unsigned_abs_diff_eq!(u16, 0);
+impl_unsigned_abs_diff_eq!(u32, 0);
+impl_unsigned_abs_diff_eq!(u64, 0);
+impl_unsigned_abs_diff_eq!(usize, 0);
+
+macro_rules! impl_signed_abs_diff_eq {
+    ($T:ident, $default_epsilon:expr) => {
+        impl AbsDiffEq for $T {
+            type Epsilon = $T;
+
+            #[inline]
+            fn default_epsilon() -> $T { $default_epsilon }
+
+            #[inline]
+            fn abs_diff_eq(&self, other: &$T, epsilon: $T) -> bool {
+                $T::abs(self - other) <= epsilon
+            }
+        }
+    }
+}
+
+impl_signed_abs_diff_eq!(i8, 0);
+impl_signed_abs_diff_eq!(i16, 0);
+impl_signed_abs_diff_eq!(i32, 0);
+impl_signed_abs_diff_eq!(i64, 0);
+impl_signed_abs_diff_eq!(isize, 0);
+impl_signed_abs_diff_eq!(f32, std::f32::EPSILON);
+impl_signed_abs_diff_eq!(f64, std::f64::EPSILON);
+
+/// Equality comparisons between two numbers using both the absolute difference and
+/// relative based comparisons.
+pub trait RelativeEq: AbsDiffEq {
+    /// The default relative tolerance for testing values that are far-apart.
+    ///
+    /// This is used when no `max_relative` value is supplied to the `relative_eq` macro.
+    fn default_max_relative() -> Self::Epsilon;
+
+    /// A test for equality that uses a relative comparison if the values are far apart.
+    fn relative_eq(&self,
+                   other: &Self,
+                   epsilon: Self::Epsilon,
+                   max_relative: Self::Epsilon)
+                   -> bool;
 
     /// The inverse of `ApproxEq::relative_eq`.
     fn relative_ne(&self,
@@ -191,37 +278,46 @@ pub trait ApproxEq: Sized {
                    -> bool {
         !Self::relative_eq(self, other, epsilon, max_relative)
     }
+}
 
-    /// The inverse of `ApproxEq::ulps_eq`.
-    fn ulps_ne(&self, other: &Self, epsilon: Self::Epsilon, max_ulps: u32) -> bool {
-        !Self::ulps_eq(self, other, epsilon, max_ulps)
+impl<'a, T: RelativeEq> RelativeEq for &'a T {
+    #[inline]
+    fn default_max_relative() -> Self::Epsilon {
+        T::default_max_relative()
+    }
+
+    #[inline]
+    fn relative_eq(&self, other: &&'a T, epsilon: T::Epsilon, max_relative: T::Epsilon) -> bool {
+        T::relative_eq(*self, *other, epsilon, max_relative)
     }
 }
 
-macro_rules! impl_float_approx_eq {
+impl<'a, T: RelativeEq> RelativeEq for &'a mut T {
+    #[inline]
+    fn default_max_relative() -> Self::Epsilon {
+        T::default_max_relative()
+    }
+
+    #[inline]
+    fn relative_eq(&self,
+                   other: &&'a mut T,
+                   epsilon: T::Epsilon,
+                   max_relative: T::Epsilon)
+                   -> bool {
+        T::relative_eq(*self, *other, epsilon, max_relative)
+    }
+}
+
+// Implementation based on: [Comparing Floating Point Numbers, 2012 Edition]
+// (https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/)
+macro_rules! impl_relative_eq {
     ($T:ident, $U:ident) => {
-        impl ApproxEq for $T {
-            type Epsilon = $T;
-
-            #[inline]
-            fn default_epsilon() -> $T { std::$T::EPSILON }
-
+        impl RelativeEq for $T {
             #[inline]
             fn default_max_relative() -> $T { std::$T::EPSILON }
 
             #[inline]
-            fn default_max_ulps() -> u32 { 4 }
-
-            #[inline]
-            fn abs_diff_eq(&self, other: &$T, epsilon: $T) -> bool {
-                $T::abs(self - other) <= epsilon
-            }
-
-            #[inline]
             fn relative_eq(&self, other: &$T, epsilon: $T, max_relative: $T) -> bool {
-                // Implementation based on: [Comparing Floating Point Numbers, 2012 Edition]
-                // (https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/)
-
                 // Handle same infinities
                 if self == other {
                     return true;
@@ -247,12 +343,64 @@ macro_rules! impl_float_approx_eq {
                 // Use a relative difference comparison
                 abs_diff <= largest * max_relative
             }
+        }
+    }
+}
+
+impl_relative_eq!(f32, i32);
+impl_relative_eq!(f64, i64);
+
+/// Equality comparisons between two numbers using both the absolute difference and ULPs
+/// (Units in Last Place) based comparisons.
+pub trait UlpsEq: AbsDiffEq {
+    /// The default ULPs to tolerate when testing values that are far-apart.
+    ///
+    /// This is used when no `max_ulps` value is supplied to the `ulps_eq` macro.
+    fn default_max_ulps() -> u32;
+
+    /// A test for equality that uses units in the last place (ULP) if the values are far apart.
+    fn ulps_eq(&self, other: &Self, epsilon: Self::Epsilon, max_ulps: u32) -> bool;
+
+    /// The inverse of `ApproxEq::ulps_eq`.
+    fn ulps_ne(&self, other: &Self, epsilon: Self::Epsilon, max_ulps: u32) -> bool {
+        !Self::ulps_eq(self, other, epsilon, max_ulps)
+    }
+}
+
+impl<'a, T: UlpsEq> UlpsEq for &'a T {
+    #[inline]
+    fn default_max_ulps() -> u32 {
+        T::default_max_ulps()
+    }
+
+    #[inline]
+    fn ulps_eq(&self, other: &&'a T, epsilon: T::Epsilon, max_ulps: u32) -> bool {
+        T::ulps_eq(*self, *other, epsilon, max_ulps)
+    }
+}
+
+impl<'a, T: UlpsEq> UlpsEq for &'a mut T {
+    #[inline]
+    fn default_max_ulps() -> u32 {
+        T::default_max_ulps()
+    }
+
+    #[inline]
+    fn ulps_eq(&self, other: &&'a mut T, epsilon: T::Epsilon, max_ulps: u32) -> bool {
+        T::ulps_eq(*self, *other, epsilon, max_ulps)
+    }
+}
+
+// Implementation based on: [Comparing Floating Point Numbers, 2012 Edition]
+// (https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/)
+macro_rules! impl_ulps_eq {
+    ($T:ident, $U:ident) => {
+        impl UlpsEq for $T {
+            #[inline]
+            fn default_max_ulps() -> u32 { 4 }
 
             #[inline]
             fn ulps_eq(&self, other: &$T, epsilon: $T, max_ulps: u32) -> bool {
-                // Implementation based on: [Comparing Floating Point Numbers, 2012 Edition]
-                // (https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/)
-
                 // For when the numbers are really close together
                 if $T::abs_diff_eq(self, other, epsilon) {
                     return true;
@@ -273,80 +421,8 @@ macro_rules! impl_float_approx_eq {
     }
 }
 
-impl_float_approx_eq!(f32, i32);
-impl_float_approx_eq!(f64, i64);
-
-impl<'a, T: ApproxEq> ApproxEq for &'a T {
-    type Epsilon = T::Epsilon;
-
-    #[inline]
-    fn default_epsilon() -> Self::Epsilon {
-        T::default_epsilon()
-    }
-
-    #[inline]
-    fn default_max_relative() -> Self::Epsilon {
-        T::default_max_relative()
-    }
-
-    #[inline]
-    fn default_max_ulps() -> u32 {
-        T::default_max_ulps()
-    }
-
-    #[inline]
-    fn abs_diff_eq(&self, other: &&'a T, epsilon: T::Epsilon) -> bool {
-        T::abs_diff_eq(*self, *other, epsilon)
-    }
-
-    #[inline]
-    fn relative_eq(&self, other: &&'a T, epsilon: T::Epsilon, max_relative: T::Epsilon) -> bool {
-        T::relative_eq(*self, *other, epsilon, max_relative)
-    }
-
-    #[inline]
-    fn ulps_eq(&self, other: &&'a T, epsilon: T::Epsilon, max_ulps: u32) -> bool {
-        T::ulps_eq(*self, *other, epsilon, max_ulps)
-    }
-}
-
-impl<'a, T: ApproxEq> ApproxEq for &'a mut T {
-    type Epsilon = T::Epsilon;
-
-    #[inline]
-    fn default_epsilon() -> Self::Epsilon {
-        T::default_epsilon()
-    }
-
-    #[inline]
-    fn default_max_relative() -> Self::Epsilon {
-        T::default_max_relative()
-    }
-
-    #[inline]
-    fn default_max_ulps() -> u32 {
-        T::default_max_ulps()
-    }
-
-    #[inline]
-    fn abs_diff_eq(&self, other: &&'a mut T, epsilon: T::Epsilon) -> bool {
-        T::abs_diff_eq(*self, *other, epsilon)
-    }
-
-    #[inline]
-    fn relative_eq(&self,
-                   other: &&'a mut T,
-                   epsilon: T::Epsilon,
-                   max_relative: T::Epsilon)
-                   -> bool {
-        T::relative_eq(*self, *other, epsilon, max_relative)
-    }
-
-    #[inline]
-    fn ulps_eq(&self, other: &&'a mut T, epsilon: T::Epsilon, max_ulps: u32) -> bool {
-        T::ulps_eq(*self, *other, epsilon, max_ulps)
-    }
-}
+impl_ulps_eq!(f32, i32);
+impl_ulps_eq!(f64, i64);
 
 /// The requisite parameters for testing for approximate equality using a
 /// absolute difference based comparison.
@@ -363,13 +439,13 @@ impl<'a, T: ApproxEq> ApproxEq for &'a mut T {
 /// AbsDiff::default().eq(&1.0, &1.0);
 /// AbsDiff::default().epsilon(f64::EPSILON).eq(&1.0, &1.0);
 /// ```
-pub struct AbsDiff<T: ApproxEq> {
+pub struct AbsDiff<T: AbsDiffEq> {
     /// The tolerance to use when testing values that are close together.
     pub epsilon: T::Epsilon,
 }
 
 impl<T> Default for AbsDiff<T>
-    where T: ApproxEq
+    where T: AbsDiffEq
 {
     #[inline]
     fn default() -> AbsDiff<T> {
@@ -380,7 +456,7 @@ impl<T> Default for AbsDiff<T>
 }
 
 impl<T> AbsDiff<T>
-    where T: ApproxEq
+    where T: AbsDiffEq
 {
     /// Replace the epsilon value with the one specified.
     #[inline]
@@ -422,7 +498,7 @@ impl<T> AbsDiff<T>
 /// Relative::default().epsilon(f64::EPSILON).max_relative(1.0).eq(&1.0, &1.0);
 /// Relative::default().max_relative(1.0).epsilon(f64::EPSILON).eq(&1.0, &1.0);
 /// ```
-pub struct Relative<T: ApproxEq> {
+pub struct Relative<T: RelativeEq> {
     /// The tolerance to use when testing values that are close together.
     pub epsilon: T::Epsilon,
     /// The relative tolerance for testing values that are far-apart.
@@ -430,7 +506,7 @@ pub struct Relative<T: ApproxEq> {
 }
 
 impl<T> Default for Relative<T>
-    where T: ApproxEq
+    where T: RelativeEq
 {
     #[inline]
     fn default() -> Relative<T> {
@@ -442,7 +518,7 @@ impl<T> Default for Relative<T>
 }
 
 impl<T> Relative<T>
-    where T: ApproxEq
+    where T: RelativeEq
 {
     /// Replace the epsilon value with the one specified.
     #[inline]
@@ -493,7 +569,7 @@ impl<T> Relative<T>
 /// Ulps::default().epsilon(f64::EPSILON).max_ulps(4).eq(&1.0, &1.0);
 /// Ulps::default().max_ulps(4).epsilon(f64::EPSILON).eq(&1.0, &1.0);
 /// ```
-pub struct Ulps<T: ApproxEq> {
+pub struct Ulps<T: UlpsEq> {
     /// The tolerance to use when testing values that are close together.
     pub epsilon: T::Epsilon,
     /// The ULPs to tolerate when testing values that are far-apart.
@@ -501,7 +577,7 @@ pub struct Ulps<T: ApproxEq> {
 }
 
 impl<T> Default for Ulps<T>
-    where T: ApproxEq
+    where T: UlpsEq
 {
     #[inline]
     fn default() -> Ulps<T> {
@@ -513,7 +589,7 @@ impl<T> Default for Ulps<T>
 }
 
 impl<T> Ulps<T>
-    where T: ApproxEq
+    where T: UlpsEq
 {
     /// Replace the epsilon value with the one specified.
     #[inline]
