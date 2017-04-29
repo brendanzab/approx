@@ -163,6 +163,7 @@ extern crate num_complex;
 #[cfg(feature="no_std")]
 use core as std;
 #[cfg(feature="no_std")]
+#[cfg_attr(feature="no_std", allow(unused_imports))] // HACK: seems to be a bug in this lint!
 use core::num::Float;
 #[cfg(feature="use_complex")]
 use num_complex::Complex;
