@@ -63,15 +63,25 @@
 //! # impl<T: AbsDiffEq> AbsDiffEq for Complex<T> where T::Epsilon: Copy {
 //! #     type Epsilon = T::Epsilon;
 //! #     fn default_epsilon() -> T::Epsilon { T::default_epsilon() }
-//! #     fn abs_diff_eq(&self, other: &Self, epsilon: T::Epsilon) -> bool { T::abs_diff_eq(&self.x, &other.x, epsilon) && T::abs_diff_eq(&self.i, &other.i, epsilon) }
+//! #     fn abs_diff_eq(&self, other: &Self, epsilon: T::Epsilon) -> bool {
+//! #         T::abs_diff_eq(&self.x, &other.x, epsilon) &&
+//! #         T::abs_diff_eq(&self.i, &other.i, epsilon)
+//! #     }
 //! # }
 //! # impl<T: RelativeEq> RelativeEq for Complex<T> where T::Epsilon: Copy {
 //! #     fn default_max_relative() -> T::Epsilon { T::default_max_relative() }
-//! #     fn relative_eq(&self, other: &Self, epsilon: T::Epsilon, max_relative: T::Epsilon) -> bool { T::relative_eq(&self.x, &other.x, epsilon, max_relative) && T::relative_eq(&self.i, &other.i, epsilon, max_relative) }
+//! #     fn relative_eq(&self, other: &Self, epsilon: T::Epsilon, max_relative: T::Epsilon)
+//! #                   -> bool {
+//! #         T::relative_eq(&self.x, &other.x, epsilon, max_relative) &&
+//! #         T::relative_eq(&self.i, &other.i, epsilon, max_relative)
+//! #     }
 //! # }
 //! # impl<T: UlpsEq> UlpsEq for Complex<T> where T::Epsilon: Copy {
 //! #     fn default_max_ulps() -> u32 { T::default_max_ulps() }
-//! #     fn ulps_eq(&self, other: &Self, epsilon: T::Epsilon, max_ulps: u32) -> bool { T::ulps_eq(&self.x, &other.x, epsilon, max_ulps) && T::ulps_eq(&self.i, &other.i, epsilon, max_ulps) }
+//! #     fn ulps_eq(&self, other: &Self, epsilon: T::Epsilon, max_ulps: u32) -> bool {
+//! #         T::ulps_eq(&self.x, &other.x, epsilon, max_ulps) &&
+//! #         T::ulps_eq(&self.i, &other.i, epsilon, max_ulps)
+//! #     }
 //! # }
 //!
 //! # fn main() {
@@ -172,16 +182,10 @@ pub trait AbsDiffEq: PartialEq {
 
     /// A test for equality that uses the absolute difference to compute the approximate
     /// equality of two numbers.
-    fn abs_diff_eq(&self,
-                   other: &Self,
-                   epsilon: Self::Epsilon)
-                   -> bool;
+    fn abs_diff_eq(&self, other: &Self, epsilon: Self::Epsilon) -> bool;
 
     /// The inverse of `ApproxEq::abs_diff_eq`.
-    fn abs_diff_ne(&self,
-                   other: &Self,
-                   epsilon: Self::Epsilon)
-                   -> bool {
+    fn abs_diff_ne(&self, other: &Self, epsilon: Self::Epsilon) -> bool {
         !Self::abs_diff_eq(self, other, epsilon)
     }
 }
@@ -261,7 +265,9 @@ impl_signed_abs_diff_eq!(f32, std::f32::EPSILON);
 impl_signed_abs_diff_eq!(f64, std::f64::EPSILON);
 
 #[cfg(feature="use_complex")]
-impl<T: AbsDiffEq> AbsDiffEq for Complex<T> where T::Epsilon: Clone {
+impl<T: AbsDiffEq> AbsDiffEq for Complex<T>
+    where T::Epsilon: Clone
+{
     type Epsilon = T::Epsilon;
 
     #[inline]
@@ -372,14 +378,20 @@ impl_relative_eq!(f32, i32);
 impl_relative_eq!(f64, i64);
 
 #[cfg(feature="use_complex")]
-impl<T: RelativeEq> RelativeEq for Complex<T> where T::Epsilon: Clone {
+impl<T: RelativeEq> RelativeEq for Complex<T>
+    where T::Epsilon: Clone
+{
     #[inline]
     fn default_max_relative() -> T::Epsilon {
         T::default_max_relative()
     }
 
     #[inline]
-    fn relative_eq(&self, other: &Complex<T>, epsilon: T::Epsilon, max_relative: T::Epsilon) -> bool {
+    fn relative_eq(&self,
+                   other: &Complex<T>,
+                   epsilon: T::Epsilon,
+                   max_relative: T::Epsilon)
+                   -> bool {
         T::relative_eq(&self.re, &other.re, epsilon.clone(), max_relative.clone()) &&
         T::relative_eq(&self.im, &other.im, epsilon.clone(), max_relative.clone())
     }
@@ -460,7 +472,9 @@ impl_ulps_eq!(f32, i32);
 impl_ulps_eq!(f64, i64);
 
 #[cfg(feature="use_complex")]
-impl<T: UlpsEq> UlpsEq for Complex<T> where T::Epsilon: Clone {
+impl<T: UlpsEq> UlpsEq for Complex<T>
+    where T::Epsilon: Clone
+{
     #[inline]
     fn default_max_ulps() -> u32 {
         T::default_max_ulps()
@@ -498,9 +512,7 @@ impl<T> Default for AbsDiff<T>
 {
     #[inline]
     fn default() -> AbsDiff<T> {
-        AbsDiff {
-            epsilon: T::default_epsilon(),
-        }
+        AbsDiff { epsilon: T::default_epsilon() }
     }
 }
 
@@ -510,10 +522,7 @@ impl<T> AbsDiff<T>
     /// Replace the epsilon value with the one specified.
     #[inline]
     pub fn epsilon(self, epsilon: T::Epsilon) -> AbsDiff<T> {
-        AbsDiff {
-            epsilon: epsilon,
-            ..self
-        }
+        AbsDiff { epsilon, ..self }
     }
 
     /// Peform the equality comparison
@@ -572,17 +581,14 @@ impl<T> Relative<T>
     /// Replace the epsilon value with the one specified.
     #[inline]
     pub fn epsilon(self, epsilon: T::Epsilon) -> Relative<T> {
-        Relative {
-            epsilon: epsilon,
-            ..self
-        }
+        Relative { epsilon, ..self }
     }
 
     /// Replace the maximum relative value with the one specified.
     #[inline]
     pub fn max_relative(self, max_relative: T::Epsilon) -> Relative<T> {
         Relative {
-            max_relative: max_relative,
+            max_relative,
             ..self
         }
     }
@@ -643,19 +649,13 @@ impl<T> Ulps<T>
     /// Replace the epsilon value with the one specified.
     #[inline]
     pub fn epsilon(self, epsilon: T::Epsilon) -> Ulps<T> {
-        Ulps {
-            epsilon: epsilon,
-            ..self
-        }
+        Ulps { epsilon, ..self }
     }
 
     /// Replace the max ulps value with the one specified.
     #[inline]
     pub fn max_ulps(self, max_ulps: u32) -> Ulps<T> {
-        Ulps {
-            max_ulps: max_ulps,
-            ..self
-        }
+        Ulps { max_ulps, ..self }
     }
 
     /// Peform the equality comparison

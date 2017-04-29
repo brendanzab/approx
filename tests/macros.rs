@@ -96,4 +96,3 @@ fn test_ulps_ne_trailing_commas() {
     let _: bool = ulps_ne!(1.0, 1.0,);
     let _: bool = ulps_ne!(1.0, 1.0, epsilon = 1.0, max_ulps = 1,);
 }
-
