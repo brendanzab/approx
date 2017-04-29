@@ -146,11 +146,16 @@
 
 #![cfg_attr(feature="no_std", no_std)]
 #![cfg_attr(feature="no_std", feature(core_float))]
-#[cfg(feature="no_std")]
-use core as std;
+
+#[cfg(feature="use_complex")]
+extern crate num_complex;
 
 #[cfg(feature="no_std")]
+use core as std;
+#[cfg(feature="no_std")]
 use core::num::Float;
+#[cfg(feature="use_complex")]
+use num_complex::Complex;
 
 mod macros;
 
@@ -255,6 +260,22 @@ impl_signed_abs_diff_eq!(isize, 0);
 impl_signed_abs_diff_eq!(f32, std::f32::EPSILON);
 impl_signed_abs_diff_eq!(f64, std::f64::EPSILON);
 
+#[cfg(feature="use_complex")]
+impl<T: AbsDiffEq> AbsDiffEq for Complex<T> where T::Epsilon: Clone {
+    type Epsilon = T::Epsilon;
+
+    #[inline]
+    fn default_epsilon() -> T::Epsilon {
+        T::default_epsilon()
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &Complex<T>, epsilon: T::Epsilon) -> bool {
+        T::abs_diff_eq(&self.re, &other.re, epsilon.clone()) &&
+        T::abs_diff_eq(&self.im, &other.im, epsilon.clone())
+    }
+}
+
 /// Equality comparisons between two numbers using both the absolute difference and
 /// relative based comparisons.
 pub trait RelativeEq: AbsDiffEq {
@@ -350,6 +371,20 @@ macro_rules! impl_relative_eq {
 impl_relative_eq!(f32, i32);
 impl_relative_eq!(f64, i64);
 
+#[cfg(feature="use_complex")]
+impl<T: RelativeEq> RelativeEq for Complex<T> where T::Epsilon: Clone {
+    #[inline]
+    fn default_max_relative() -> T::Epsilon {
+        T::default_max_relative()
+    }
+
+    #[inline]
+    fn relative_eq(&self, other: &Complex<T>, epsilon: T::Epsilon, max_relative: T::Epsilon) -> bool {
+        T::relative_eq(&self.re, &other.re, epsilon.clone(), max_relative.clone()) &&
+        T::relative_eq(&self.im, &other.im, epsilon.clone(), max_relative.clone())
+    }
+}
+
 /// Equality comparisons between two numbers using both the absolute difference and ULPs
 /// (Units in Last Place) based comparisons.
 pub trait UlpsEq: AbsDiffEq {
@@ -423,6 +458,20 @@ macro_rules! impl_ulps_eq {
 
 impl_ulps_eq!(f32, i32);
 impl_ulps_eq!(f64, i64);
+
+#[cfg(feature="use_complex")]
+impl<T: UlpsEq> UlpsEq for Complex<T> where T::Epsilon: Clone {
+    #[inline]
+    fn default_max_ulps() -> u32 {
+        T::default_max_ulps()
+    }
+
+    #[inline]
+    fn ulps_eq(&self, other: &Complex<T>, epsilon: T::Epsilon, max_ulps: u32) -> bool {
+        T::ulps_eq(&self.re, &other.re, epsilon.clone(), max_ulps) &&
+        T::ulps_eq(&self.im, &other.im, epsilon.clone(), max_ulps)
+    }
+}
 
 /// The requisite parameters for testing for approximate equality using a
 /// absolute difference based comparison.

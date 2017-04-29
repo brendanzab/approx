@@ -21,6 +21,24 @@ mod test_f32 {
     use std::f32;
 
     #[test]
+    fn test_basic() {
+        assert_relative_eq!(1.0f32, 1.0f32);
+        assert_relative_ne!(1.0f32, 2.0f32);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_basic_panic_eq() {
+        assert_relative_eq!(1.0f32, 2.0f32);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_basic_panic_ne() {
+        assert_relative_ne!(1.0f32, 1.0f32);
+    }
+
+    #[test]
     fn test_big() {
         assert_relative_eq!(100000000.0f32, 100000001.0f32);
         assert_relative_eq!(100000001.0f32, 100000000.0f32);
@@ -170,6 +188,24 @@ mod test_f64 {
     use std::f64;
 
     #[test]
+    fn test_basic() {
+        assert_relative_eq!(1.0f64, 1.0f64);
+        assert_relative_ne!(1.0f64, 2.0f64);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_basic_panic_eq() {
+        assert_relative_eq!(1.0f64, 2.0f64);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_basic_panic_ne() {
+        assert_relative_ne!(1.0f64, 1.0f64);
+    }
+
+    #[test]
     fn test_big() {
         assert_relative_eq!(10000000000000000.0f64, 10000000000000001.0f64);
         assert_relative_eq!(10000000000000001.0f64, 10000000000000000.0f64);
@@ -312,5 +348,55 @@ mod test_f64 {
         assert_relative_ne!(0.000000000000001f64, f64::MIN_POSITIVE);
         assert_relative_ne!(f64::MIN_POSITIVE, 0.000000000000001f64);
         assert_relative_ne!(-f64::MIN_POSITIVE, 0.000000000000001f64);
+    }
+}
+
+#[cfg(feature="use_complex")]
+mod test_complex {
+    extern crate num_complex;
+    pub use self::num_complex::Complex;
+
+    mod test_f32 {
+        use super::Complex;
+
+        #[test]
+        fn test_basic() {
+            assert_relative_eq!(Complex::new(1.0f32, 2.0f32), Complex::new(1.0f32, 2.0f32));
+            assert_relative_ne!(Complex::new(1.0f32, 2.0f32), Complex::new(2.0f32, 1.0f32));
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_basic_panic_eq() {
+            assert_relative_eq!(Complex::new(1.0f32, 2.0f32), Complex::new(2.0f32, 1.0f32));
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_basic_panic_ne() {
+            assert_relative_ne!(Complex::new(1.0f32, 2.0f32), Complex::new(1.0f32, 2.0f32));
+        }
+    }
+
+    mod test_f64 {
+        use super::Complex;
+
+        #[test]
+        fn test_basic() {
+            assert_relative_eq!(Complex::new(1.0f64, 2.0f64), Complex::new(1.0f64, 2.0f64));
+            assert_relative_ne!(Complex::new(1.0f64, 2.0f64), Complex::new(2.0f64, 1.0f64));
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_basic_panic_eq() {
+            assert_relative_eq!(Complex::new(1.0f64, 2.0f64), Complex::new(2.0f64, 1.0f64));
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_basic_panic_ne() {
+            assert_relative_ne!(Complex::new(1.0f64, 2.0f64), Complex::new(1.0f64, 2.0f64));
+        }
     }
 }

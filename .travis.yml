@@ -9,11 +9,14 @@ cache: cargo
 
 env:
   - CARGO_FEATURES=""
+  - CARGO_FEATURES="use_complex"
 
 matrix:
   include:
     - rust: nightly
       env: CARGO_FEATURES="no_std"
+    - rust: nightly
+      env: CARGO_FEATURES="no_std use_complex"
 
 script:
   - cargo build --features "$CARGO_FEATURES"

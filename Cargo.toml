@@ -27,3 +27,7 @@ name = "approx"
 
 [features]
 no_std = []
+use_complex = ["num-complex"]
+
+[dependencies]
+num-complex = { version = "0.1.37", optional = true }
