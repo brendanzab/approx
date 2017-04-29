@@ -12,321 +12,128 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Predicate for testing the approximate equality of two values.
+/// Approximate equality of using the absolute difference.
 #[macro_export]
 macro_rules! abs_diff_eq {
-    ($lhs:expr, $rhs:expr, $($opt:ident = $opt_val:expr),+) => {{
-        $crate::AbsDiff::default()$(.$opt($opt_val))+.eq(&$lhs, &$rhs)
-    }};
-    ($lhs:expr, $rhs:expr) => {{
-        $crate::AbsDiff::default().eq(&$lhs, &$rhs)
-    }};
+    ($lhs:expr, $rhs:expr $(, $opt:ident = $val:expr)*) => { $crate::AbsDiff::default()$(.$opt($val))*.eq(&$lhs, &$rhs) };
+    ($lhs:expr, $rhs:expr $(, $opt:ident = $val:expr)*,) => { $crate::AbsDiff::default()$(.$opt($val))*.eq(&$lhs, &$rhs) };
 }
 
-/// Predicate for testing the approximate inequality of two values.
+/// Approximate inequality of using the absolute difference.
 #[macro_export]
 macro_rules! abs_diff_ne {
-    ($lhs:expr, $rhs:expr, $($opt:ident = $opt_val:expr),+) => {{
-        $crate::AbsDiff::default()$(.$opt($opt_val))+.ne(&$lhs, &$rhs)
-    }};
-    ($lhs:expr, $rhs:expr) => {{
-        $crate::AbsDiff::default().ne(&$lhs, &$rhs)
-    }};
+    ($lhs:expr, $rhs:expr $(, $opt:ident = $val:expr)*) => { $crate::AbsDiff::default()$(.$opt($val))*.ne(&$lhs, &$rhs) };
+    ($lhs:expr, $rhs:expr $(, $opt:ident = $val:expr)*,) => { $crate::AbsDiff::default()$(.$opt($val))*.ne(&$lhs, &$rhs) };
 }
 
-#[macro_export]
-macro_rules! assert_abs_diff_eq {
-    ($given:expr, $expected:expr) => {{
-        let (given, expected) = (&($given), &($expected));
-
-        if !abs_diff_eq!(given, expected) {
-            panic!(
-"assert_abs_diff_eq!({}, {})
-
-    left  = {:?}
-    right = {:?}
-
-",
-                stringify!($given), stringify!($expected),
-                given, expected,
-            );
-        }
-    }};
-    ($given:expr, $expected:expr, $($opt:ident = $opt_val:expr),+) => {{
-        let (given, expected) = (&($given), &($expected));
-
-        if !abs_diff_eq!(given, expected, $($opt = $opt_val),+) {
-            panic!(
-"assert_abs_diff_eq!({}, {}, {})
-
-    left  = {:?}
-    right = {:?}
-
-",
-                stringify!($given), stringify!($expected),
-                stringify!($($opt = $opt_val),+),
-                given, expected,
-            );
-        }
-    }};
-    ($given:expr, $expected:expr,) => {
-        assert_abs_diff_eq!($given, $expected)
-    };
-    ($given:expr, $expected:expr, $($opt:ident = $opt_val:expr,)+) => {
-        assert_abs_diff_eq!($given, $expected, $($opt = $opt_val),+)
-    };
-}
-
-#[macro_export]
-macro_rules! assert_abs_diff_ne {
-    ($given:expr, $expected:expr) => {{
-        let (given, expected) = (&($given), &($expected));
-
-        if !abs_diff_ne!(given, expected) {
-            panic!(
-"assert_abs_diff_ne!({}, {})
-
-    left  = {:?}
-    right = {:?}
-
-",
-                stringify!($given), stringify!($expected),
-                given, expected,
-            );
-        }
-    }};
-    ($given:expr, $expected:expr, $($opt:ident = $opt_val:expr),+) => {{
-        let (given, expected) = (&($given), &($expected));
-
-        if !abs_diff_ne!(given, expected, $($opt = $opt_val),+) {
-            panic!(
-"assert_abs_diff_ne!({}, {}, {})
-
-    left  = {:?}
-    right = {:?}
-
-",
-                stringify!($given), stringify!($expected),
-                stringify!($($opt = $opt_val),+),
-                given, expected,
-            );
-        }
-    }};
-    ($given:expr, $expected:expr,) => {
-        assert_abs_diff_ne!($given, $expected)
-    };
-}
-
-/// Predicate for testing the approximate equality of two values.
+/// Approximate equality using both the absolute difference and relative based comparisons.
 #[macro_export]
 macro_rules! relative_eq {
-    ($lhs:expr, $rhs:expr, $($opt:ident = $opt_val:expr),+) => {{
-        $crate::Relative::default()$(.$opt($opt_val))+.eq(&$lhs, &$rhs)
-    }};
-    ($lhs:expr, $rhs:expr) => {{
-        $crate::Relative::default().eq(&$lhs, &$rhs)
-    }};
+    ($lhs:expr, $rhs:expr $(, $opt:ident = $val:expr)*) => { $crate::Relative::default()$(.$opt($val))*.eq(&$lhs, &$rhs) };
+    ($lhs:expr, $rhs:expr $(, $opt:ident = $val:expr)*,) => { $crate::Relative::default()$(.$opt($val))*.eq(&$lhs, &$rhs) };
 }
 
-/// Predicate for testing the approximate inequality of two values.
+/// Approximate inequality using both the absolute difference and relative based comparisons.
 #[macro_export]
 macro_rules! relative_ne {
-    ($lhs:expr, $rhs:expr, $($opt:ident = $opt_val:expr),+) => {{
-        $crate::Relative::default()$(.$opt($opt_val))+.ne(&$lhs, &$rhs)
-    }};
-    ($lhs:expr, $rhs:expr) => {{
-        $crate::Relative::default().ne(&$lhs, &$rhs)
-    }};
+    ($lhs:expr, $rhs:expr $(, $opt:ident = $val:expr)*) => { $crate::Relative::default()$(.$opt($val))*.ne(&$lhs, &$rhs) };
+    ($lhs:expr, $rhs:expr $(, $opt:ident = $val:expr)*,) => { $crate::Relative::default()$(.$opt($val))*.ne(&$lhs, &$rhs) };
 }
 
-#[macro_export]
-macro_rules! assert_relative_eq {
-    ($given:expr, $expected:expr) => {{
-        let (given, expected) = (&($given), &($expected));
-
-        if !relative_eq!(given, expected) {
-            panic!(
-"assert_relative_eq!({}, {})
-
-    left  = {:?}
-    right = {:?}
-
-",
-                stringify!($given), stringify!($expected),
-                given, expected,
-            );
-        }
-    }};
-    ($given:expr, $expected:expr, $($opt:ident = $opt_val:expr),+) => {{
-        let (given, expected) = (&($given), &($expected));
-
-        if !relative_eq!(given, expected, $($opt = $opt_val),+) {
-            panic!(
-"assert_relative_eq!({}, {}, {})
-
-    left  = {:?}
-    right = {:?}
-
-",
-                stringify!($given), stringify!($expected),
-                stringify!($($opt = $opt_val),+),
-                given, expected,
-            );
-        }
-    }};
-    ($given:expr, $expected:expr,) => {
-        assert_relative_eq!($given, $expected)
-    };
-    ($given:expr, $expected:expr, $($opt:ident = $opt_val:expr,)+) => {
-        assert_relative_eq!($given, $expected, $($opt = $opt_val),+)
-    };
-}
-
-#[macro_export]
-macro_rules! assert_relative_ne {
-    ($given:expr, $expected:expr) => {{
-        let (given, expected) = (&($given), &($expected));
-
-        if !relative_ne!(given, expected) {
-            panic!(
-"assert_relative_ne!({}, {})
-
-    left  = {:?}
-    right = {:?}
-
-",
-                stringify!($given), stringify!($expected),
-                given, expected,
-            );
-        }
-    }};
-    ($given:expr, $expected:expr, $($opt:ident = $opt_val:expr),+) => {{
-        let (given, expected) = (&($given), &($expected));
-
-        if !relative_ne!(given, expected, $($opt = $opt_val),+) {
-            panic!(
-"assert_relative_ne!({}, {}, {})
-
-    left  = {:?}
-    right = {:?}
-
-",
-                stringify!($given), stringify!($expected),
-                stringify!($($opt = $opt_val),+),
-                given, expected,
-            );
-        }
-    }};
-    ($given:expr, $expected:expr,) => {
-        assert_relative_ne!($given, $expected)
-    };
-}
-
-
-/// Predicate for testing the approximate equality of two values using a maximum ULPs (Units
-/// in Last Place).
+/// Approximate equality using both the absolute difference and ULPs (Units in Last Place).
 #[macro_export]
 macro_rules! ulps_eq {
-    ($lhs:expr, $rhs:expr, $($opt:ident = $opt_val:expr),+) => {{
-        $crate::Ulps::default()$(.$opt($opt_val))+.eq(&$lhs, &$rhs)
-    }};
-    ($lhs:expr, $rhs:expr) => {{
-        $crate::Ulps::default().eq(&$lhs, &$rhs)
-    }};
+    ($lhs:expr, $rhs:expr $(, $opt:ident = $val:expr)*) => { $crate::Ulps::default()$(.$opt($val))*.eq(&$lhs, &$rhs) };
+    ($lhs:expr, $rhs:expr $(, $opt:ident = $val:expr)*,) => { $crate::Ulps::default()$(.$opt($val))*.eq(&$lhs, &$rhs) };
 }
 
-/// Predicate for testing the approximate inequality of two values using a maximum ULPs (Units
-/// in Last Place).
+/// Approximate inequality using both the absolute difference and ULPs (Units in Last Place).
 #[macro_export]
 macro_rules! ulps_ne {
-    ($lhs:expr, $rhs:expr, $($opt:ident = $opt_val:expr),+) => {{
-        $crate::Ulps::default()$(.$opt($opt_val))+.ne(&$lhs, &$rhs)
+    ($lhs:expr, $rhs:expr $(, $opt:ident = $val:expr)*) => { $crate::Ulps::default()$(.$opt($val))*.ne(&$lhs, &$rhs) };
+    ($lhs:expr, $rhs:expr $(, $opt:ident = $val:expr)*,) => { $crate::Ulps::default()$(.$opt($val))*.ne(&$lhs, &$rhs) };
+}
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __assert_approx {
+    ($eq:ident, $given:expr, $expected:expr) => {{
+        let (given, expected) = (&($given), &($expected));
+
+        if !$eq!(given, expected) {
+            panic!(
+"assert_{}!({}, {})
+
+    left  = {:?}
+    right = {:?}
+
+",
+                stringify!($eq),
+                stringify!($given),
+                stringify!($expected),
+                given, expected,
+            );
+        }
     }};
-    ($lhs:expr, $rhs:expr) => {{
-        $crate::Ulps::default().ne(&$lhs, &$rhs)
+    ($eq:ident, $given:expr, $expected:expr, $($opt:ident = $val:expr),+) => {{
+        let (given, expected) = (&($given), &($expected));
+
+        if !$eq!(given, expected, $($opt = $val),+) {
+            panic!(
+"assert_{}!({}, {}, {})
+
+    left  = {:?}
+    right = {:?}
+
+",
+                stringify!($eq),
+                stringify!($given),
+                stringify!($expected),
+                stringify!($($opt = $val),+),
+                given, expected,
+            );
+        }
     }};
 }
 
+/// An assertion that delegates to `abs_diff_eq!`, and panics with a helpful error on failure.
+#[macro_export]
+macro_rules! assert_abs_diff_eq {
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => { __assert_approx!(abs_diff_eq, $given, $expected $(, $opt = $val)*) };
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*,) => { __assert_approx!(abs_diff_eq, $given, $expected $(, $opt = $val)*) };
+}
+
+/// An assertion that delegates to `abs_diff_ne!`, and panics with a helpful error on failure.
+#[macro_export]
+macro_rules! assert_abs_diff_ne {
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => { __assert_approx!(abs_diff_ne, $given, $expected $(, $opt = $val)*) };
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*,) => { __assert_approx!(abs_diff_ne, $given, $expected $(, $opt = $val)*) };
+}
+
+/// An assertion that delegates to `relative_eq!`, and panics with a helpful error on failure.
+#[macro_export]
+macro_rules! assert_relative_eq {
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => { __assert_approx!(relative_eq, $given, $expected $(, $opt = $val)*) };
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*,) => { __assert_approx!(relative_eq, $given, $expected $(, $opt = $val)*) };
+}
+
+/// An assertion that delegates to `relative_ne!`, and panics with a helpful error on failure.
+#[macro_export]
+macro_rules! assert_relative_ne {
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => { __assert_approx!(relative_ne, $given, $expected $(, $opt = $val)*) };
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*,) => { __assert_approx!(relative_ne, $given, $expected $(, $opt = $val)*) };
+}
+
+/// An assertion that delegates to `ulps_eq!`, and panics with a helpful error on failure.
 #[macro_export]
 macro_rules! assert_ulps_eq {
-    ($given:expr, $expected:expr) => {{
-        let (given, expected) = (&($given), &($expected));
-
-        if !ulps_eq!(given, expected) {
-            panic!(
-"assert_ulps_eq!({}, {})
-
-    left  = {:?}
-    right = {:?}
-
-",
-                stringify!($given), stringify!($expected),
-                given, expected,
-            );
-        }
-    }};
-    ($given:expr, $expected:expr, $($opt:ident = $opt_val:expr),+) => {{
-        let (given, expected) = (&($given), &($expected));
-
-        if !ulps_eq!(given, expected, $($opt = $opt_val),+) {
-            panic!(
-"assert_ulps_eq!({}, {}, {})
-
-    left  = {:?}
-    right = {:?}
-
-",
-                stringify!($given), stringify!($expected),
-                stringify!($($opt = $opt_val),+),
-                given, expected,
-            );
-        }
-    }};
-    ($given:expr, $expected:expr,) => {
-        assert_ulps_eq!($given, $expected)
-    };
-    ($given:expr, $expected:expr, $($opt:ident = $opt_val:expr,)+) => {
-        assert_ulps_eq!($given, $expected, $($opt = $opt_val),+)
-    };
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => { __assert_approx!(ulps_eq, $given, $expected $(, $opt = $val)*) };
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*,) => { __assert_approx!(ulps_eq, $given, $expected $(, $opt = $val)*) };
 }
 
+/// An assertion that delegates to `ulps_ne!`, and panics with a helpful error on failure.
 #[macro_export]
 macro_rules! assert_ulps_ne {
-    ($given:expr, $expected:expr) => {{
-        let (given, expected) = (&($given), &($expected));
-
-        if !ulps_ne!(given, expected) {
-            panic!(
-"assert_ulps_ne!({}, {})
-
-    left  = {:?}
-    right = {:?}
-
-",
-                stringify!($given), stringify!($expected),
-                given, expected,
-            );
-        }
-    }};
-    ($given:expr, $expected:expr, $($opt:ident = $opt_val:expr),+) => {{
-        let (given, expected) = (&($given), &($expected));
-
-        if !ulps_ne!(given, expected, $($opt = $opt_val),+) {
-            panic!(
-"assert_ulps_ne!({}, {}, {})
-
-    left  = {:?}
-    right = {:?}
-
-",
-                stringify!($given), stringify!($expected),
-                stringify!($($opt = $opt_val),+),
-                given, expected,
-            );
-        }
-    }};
-    ($given:expr, $expected:expr,) => {
-        assert_ulps_ne!($given, $expected)
-    };
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => { __assert_approx!(ulps_ne, $given, $expected $(, $opt = $val)*) };
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*,) => { __assert_approx!(ulps_ne, $given, $expected $(, $opt = $val)*) };
 }
-

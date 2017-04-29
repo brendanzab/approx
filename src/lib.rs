@@ -39,7 +39,7 @@
 //! # }
 //! ```
 //!
-//! ## Implementing approximate equality for custom types
+//! # Implementing approximate equality for custom types
 //!
 //! The `ApproxEq` trait allows approximate equalities to be implemented on types, based on the
 //! fundamental floating point implementations.
@@ -275,7 +275,6 @@ macro_rules! impl_float_approx_eq {
 
 impl_float_approx_eq!(f32, i32);
 impl_float_approx_eq!(f64, i64);
-
 
 impl<'a, T: ApproxEq> ApproxEq for &'a T {
     type Epsilon = T::Epsilon;
