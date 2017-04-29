@@ -9,12 +9,20 @@ cache: cargo
 
 env:
   - CARGO_FEATURES=""
+  - CARGO_FEATURES="use_complex"
 
 matrix:
   include:
     - rust: nightly
       env: CARGO_FEATURES="no_std"
+    - rust: nightly
+      env: CARGO_FEATURES="no_std use_complex"
+
+before_script:
+  - export PATH="$PATH:$HOME/.cargo/bin"
+  - which rustfmt || cargo install rustfmt && cargo fmt -- --version
 
 script:
+  - cargo fmt -- --write-mode=diff
   - cargo build --features "$CARGO_FEATURES"
   - cargo test --features "$CARGO_FEATURES"

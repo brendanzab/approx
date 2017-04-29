@@ -12,13 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Test cases derived from https://github.com/Pybonacci/puntoflotante.org/blob/master/content/errors/NearlyEqualsTest.java
+// Test cases derived from:
+// https://github.com/Pybonacci/puntoflotante.org/blob/master/content/errors/NearlyEqualsTest.java
 
 #[macro_use]
 extern crate approx;
 
 mod test_f32 {
     use std::f32;
+
+    #[test]
+    fn test_basic() {
+        assert_abs_diff_eq!(1.0f32, 1.0f32);
+        assert_abs_diff_ne!(1.0f32, 2.0f32);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_basic_panic_eq() {
+        assert_abs_diff_eq!(1.0f32, 2.0f32);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_basic_panic_ne() {
+        assert_abs_diff_ne!(1.0f32, 1.0f32);
+    }
 
     #[test]
     fn test_big() {
@@ -172,6 +191,24 @@ mod test_f64 {
     use std::f64;
 
     #[test]
+    fn test_basic() {
+        assert_abs_diff_eq!(1.0f64, 1.0f64);
+        assert_abs_diff_ne!(1.0f64, 2.0f64);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_basic_panic_eq() {
+        assert_abs_diff_eq!(1.0f64, 2.0f64);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_basic_panic_ne() {
+        assert_abs_diff_ne!(1.0f64, 1.0f64);
+    }
+
+    #[test]
     fn test_big() {
         assert_abs_diff_eq!(10000000000000000.0f64, 10000000000000001.0f64);
         assert_abs_diff_eq!(10000000000000001.0f64, 10000000000000000.0f64);
@@ -316,5 +353,55 @@ mod test_f64 {
         assert_abs_diff_ne!(0.000000000000001f64, f64::MIN_POSITIVE);
         assert_abs_diff_ne!(f64::MIN_POSITIVE, 0.000000000000001f64);
         assert_abs_diff_ne!(-f64::MIN_POSITIVE, 0.000000000000001f64);
+    }
+}
+
+#[cfg(feature="use_complex")]
+mod test_complex {
+    extern crate num_complex;
+    pub use self::num_complex::Complex;
+
+    mod test_f32 {
+        use super::Complex;
+
+        #[test]
+        fn test_basic() {
+            assert_abs_diff_eq!(Complex::new(1.0f32, 2.0f32), Complex::new(1.0f32, 2.0f32));
+            assert_abs_diff_ne!(Complex::new(1.0f32, 2.0f32), Complex::new(2.0f32, 1.0f32));
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_basic_panic_eq() {
+            assert_abs_diff_eq!(Complex::new(1.0f32, 2.0f32), Complex::new(2.0f32, 1.0f32));
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_basic_panic_ne() {
+            assert_abs_diff_ne!(Complex::new(1.0f32, 2.0f32), Complex::new(1.0f32, 2.0f32));
+        }
+    }
+
+    mod test_f64 {
+        use super::Complex;
+
+        #[test]
+        fn test_basic() {
+            assert_abs_diff_eq!(Complex::new(1.0f64, 2.0f64), Complex::new(1.0f64, 2.0f64));
+            assert_abs_diff_ne!(Complex::new(1.0f64, 2.0f64), Complex::new(2.0f64, 1.0f64));
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_basic_panic_eq() {
+            assert_abs_diff_eq!(Complex::new(1.0f64, 2.0f64), Complex::new(2.0f64, 1.0f64));
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_basic_panic_ne() {
+            assert_abs_diff_ne!(Complex::new(1.0f64, 2.0f64), Complex::new(1.0f64, 2.0f64));
+        }
     }
 }
