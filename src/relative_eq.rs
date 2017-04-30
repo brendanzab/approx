@@ -1,7 +1,7 @@
 #[cfg(feature="no_std")]
-use core::{f32, f64};
+use core::{cell, f32, f64};
 #[cfg(not(feature="no_std"))]
-use std::{f32, f64};
+use std::{cell, f32, f64};
 #[cfg(feature="no_std")]
 #[cfg_attr(feature="no_std", allow(unused_imports))] // HACK: seems to be a bug in this lint!
 use core::num::Float;
@@ -92,7 +92,7 @@ impl_relative_eq!(f64, i64);
 
 impl<'a, T: RelativeEq> RelativeEq for &'a T {
     #[inline]
-    fn default_max_relative() -> Self::Epsilon {
+    fn default_max_relative() -> T::Epsilon {
         T::default_max_relative()
     }
 
@@ -104,7 +104,7 @@ impl<'a, T: RelativeEq> RelativeEq for &'a T {
 
 impl<'a, T: RelativeEq> RelativeEq for &'a mut T {
     #[inline]
-    fn default_max_relative() -> Self::Epsilon {
+    fn default_max_relative() -> T::Epsilon {
         T::default_max_relative()
     }
 
@@ -115,6 +115,58 @@ impl<'a, T: RelativeEq> RelativeEq for &'a mut T {
                    max_relative: T::Epsilon)
                    -> bool {
         T::relative_eq(*self, *other, epsilon, max_relative)
+    }
+}
+
+impl<T: RelativeEq + Copy> RelativeEq for cell::Cell<T> {
+    #[inline]
+    fn default_max_relative() -> T::Epsilon {
+        T::default_max_relative()
+    }
+
+    #[inline]
+    fn relative_eq(&self,
+                   other: &cell::Cell<T>,
+                   epsilon: T::Epsilon,
+                   max_relative: T::Epsilon)
+                   -> bool {
+        T::relative_eq(&self.get(), &other.get(), epsilon, max_relative)
+    }
+}
+
+impl<T: RelativeEq> RelativeEq for cell::RefCell<T> {
+    #[inline]
+    fn default_max_relative() -> T::Epsilon {
+        T::default_max_relative()
+    }
+
+    #[inline]
+    fn relative_eq(&self,
+                   other: &cell::RefCell<T>,
+                   epsilon: T::Epsilon,
+                   max_relative: T::Epsilon)
+                   -> bool {
+        T::relative_eq(&self.borrow(), &other.borrow(), epsilon, max_relative)
+    }
+}
+
+impl<T: RelativeEq> RelativeEq for [T]
+    where T::Epsilon: Clone
+{
+    #[inline]
+    fn default_max_relative() -> T::Epsilon {
+        T::default_max_relative()
+    }
+
+    #[inline]
+    fn relative_eq(&self, other: &[T], epsilon: T::Epsilon, max_relative: T::Epsilon) -> bool {
+        self.len() == other.len() &&
+        Iterator::zip(self.iter(), other).all(|(x, y)| {
+                                                  T::relative_eq(x,
+                                                                 y,
+                                                                 epsilon.clone(),
+                                                                 max_relative.clone())
+                                              })
     }
 }
 

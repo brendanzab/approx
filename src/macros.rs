@@ -84,7 +84,7 @@ macro_rules! __assert_approx {
     ($eq:ident, $given:expr, $expected:expr) => {{
         let (given, expected) = (&($given), &($expected));
 
-        if !$eq!(given, expected) {
+        if !$eq!(*given, *expected) {
             panic!(
 "assert_{}!({}, {})
 
@@ -102,7 +102,7 @@ macro_rules! __assert_approx {
     ($eq:ident, $given:expr, $expected:expr, $($opt:ident = $val:expr),+) => {{
         let (given, expected) = (&($given), &($expected));
 
-        if !$eq!(given, expected, $($opt = $val),+) {
+        if !$eq!(*given, *expected, $($opt = $val),+) {
             panic!(
 "assert_{}!({}, {}, {})
 

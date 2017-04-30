@@ -185,14 +185,12 @@ pub use ulps_eq::UlpsEq;
 /// AbsDiff::default().eq(&1.0, &1.0);
 /// AbsDiff::default().epsilon(f64::EPSILON).eq(&1.0, &1.0);
 /// ```
-pub struct AbsDiff<T: AbsDiffEq> {
+pub struct AbsDiff<T: AbsDiffEq + ?Sized> {
     /// The tolerance to use when testing values that are close together.
     pub epsilon: T::Epsilon,
 }
 
-impl<T> Default for AbsDiff<T>
-    where T: AbsDiffEq
-{
+impl<T: AbsDiffEq + ?Sized> Default for AbsDiff<T> {
     #[inline]
     fn default() -> AbsDiff<T> {
         AbsDiff { epsilon: T::default_epsilon() }
@@ -200,7 +198,7 @@ impl<T> Default for AbsDiff<T>
 }
 
 impl<T> AbsDiff<T>
-    where T: AbsDiffEq
+    where T: AbsDiffEq + ?Sized
 {
     /// Replace the epsilon value with the one specified.
     #[inline]
@@ -239,16 +237,14 @@ impl<T> AbsDiff<T>
 /// Relative::default().epsilon(f64::EPSILON).max_relative(1.0).eq(&1.0, &1.0);
 /// Relative::default().max_relative(1.0).epsilon(f64::EPSILON).eq(&1.0, &1.0);
 /// ```
-pub struct Relative<T: RelativeEq> {
+pub struct Relative<T: RelativeEq + ?Sized> {
     /// The tolerance to use when testing values that are close together.
     pub epsilon: T::Epsilon,
     /// The relative tolerance for testing values that are far-apart.
     pub max_relative: T::Epsilon,
 }
 
-impl<T> Default for Relative<T>
-    where T: RelativeEq
-{
+impl<T: RelativeEq + ?Sized> Default for Relative<T> {
     #[inline]
     fn default() -> Relative<T> {
         Relative {
@@ -258,9 +254,7 @@ impl<T> Default for Relative<T>
     }
 }
 
-impl<T> Relative<T>
-    where T: RelativeEq
-{
+impl<T: RelativeEq + ?Sized> Relative<T> {
     /// Replace the epsilon value with the one specified.
     #[inline]
     pub fn epsilon(self, epsilon: T::Epsilon) -> Relative<T> {
@@ -307,14 +301,14 @@ impl<T> Relative<T>
 /// Ulps::default().epsilon(f64::EPSILON).max_ulps(4).eq(&1.0, &1.0);
 /// Ulps::default().max_ulps(4).epsilon(f64::EPSILON).eq(&1.0, &1.0);
 /// ```
-pub struct Ulps<T: UlpsEq> {
+pub struct Ulps<T: UlpsEq + ?Sized> {
     /// The tolerance to use when testing values that are close together.
     pub epsilon: T::Epsilon,
     /// The ULPs to tolerate when testing values that are far-apart.
     pub max_ulps: u32,
 }
 
-impl<T> Default for Ulps<T>
+impl<T: UlpsEq + ?Sized> Default for Ulps<T>
     where T: UlpsEq
 {
     #[inline]
@@ -326,9 +320,7 @@ impl<T> Default for Ulps<T>
     }
 }
 
-impl<T> Ulps<T>
-    where T: UlpsEq
-{
+impl<T: UlpsEq + ?Sized> Ulps<T> {
     /// Replace the epsilon value with the one specified.
     #[inline]
     pub fn epsilon(self, epsilon: T::Epsilon) -> Ulps<T> {

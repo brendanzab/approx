@@ -1,7 +1,7 @@
 #[cfg(feature="no_std")]
-use core::{f32, f64};
+use core::{cell, f32, f64};
 #[cfg(not(feature="no_std"))]
-use std::{f32, f64};
+use std::{cell, f32, f64};
 #[cfg(feature="no_std")]
 #[cfg_attr(feature="no_std", allow(unused_imports))] // HACK: seems to be a bug in this lint!
 use core::num::Float;
@@ -92,7 +92,7 @@ impl<'a, T: AbsDiffEq> AbsDiffEq for &'a T {
     type Epsilon = T::Epsilon;
 
     #[inline]
-    fn default_epsilon() -> Self::Epsilon {
+    fn default_epsilon() -> T::Epsilon {
         T::default_epsilon()
     }
 
@@ -106,13 +106,58 @@ impl<'a, T: AbsDiffEq> AbsDiffEq for &'a mut T {
     type Epsilon = T::Epsilon;
 
     #[inline]
-    fn default_epsilon() -> Self::Epsilon {
+    fn default_epsilon() -> T::Epsilon {
         T::default_epsilon()
     }
 
     #[inline]
     fn abs_diff_eq(&self, other: &&'a mut T, epsilon: T::Epsilon) -> bool {
         T::abs_diff_eq(*self, *other, epsilon)
+    }
+}
+
+impl<T: AbsDiffEq + Copy> AbsDiffEq for cell::Cell<T> {
+    type Epsilon = T::Epsilon;
+
+    #[inline]
+    fn default_epsilon() -> T::Epsilon {
+        T::default_epsilon()
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &cell::Cell<T>, epsilon: T::Epsilon) -> bool {
+        T::abs_diff_eq(&self.get(), &other.get(), epsilon)
+    }
+}
+
+impl<T: AbsDiffEq> AbsDiffEq for cell::RefCell<T> {
+    type Epsilon = T::Epsilon;
+
+    #[inline]
+    fn default_epsilon() -> T::Epsilon {
+        T::default_epsilon()
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &cell::RefCell<T>, epsilon: T::Epsilon) -> bool {
+        T::abs_diff_eq(&self.borrow(), &other.borrow(), epsilon)
+    }
+}
+
+impl<T: AbsDiffEq> AbsDiffEq for [T]
+    where T::Epsilon: Clone
+{
+    type Epsilon = T::Epsilon;
+
+    #[inline]
+    fn default_epsilon() -> T::Epsilon {
+        T::default_epsilon()
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &[T], epsilon: T::Epsilon) -> bool {
+        self.len() == other.len() &&
+        Iterator::zip(self.iter(), other).all(|(x, y)| T::abs_diff_eq(x, y, epsilon.clone()))
     }
 }
 

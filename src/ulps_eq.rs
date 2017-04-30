@@ -1,10 +1,10 @@
 #[cfg(feature="no_std")]
-use core::mem;
+use core::{cell, mem};
 #[cfg(feature="no_std")]
 #[cfg_attr(feature="no_std", allow(unused_imports))] // HACK: seems to be a bug in this lint!
 use core::num::Float;
 #[cfg(not(feature="no_std"))]
-use std::mem;
+use std::{cell, mem};
 #[cfg(feature="use_complex")]
 use num_complex::Complex;
 
@@ -94,6 +94,50 @@ impl<'a, T: UlpsEq> UlpsEq for &'a mut T {
     #[inline]
     fn ulps_eq(&self, other: &&'a mut T, epsilon: T::Epsilon, max_ulps: u32) -> bool {
         T::ulps_eq(*self, *other, epsilon, max_ulps)
+    }
+}
+
+impl<T: UlpsEq + Copy> UlpsEq for cell::Cell<T> {
+    #[inline]
+    fn default_max_ulps() -> u32 {
+        T::default_max_ulps()
+    }
+
+    #[inline]
+    fn ulps_eq(&self, other: &cell::Cell<T>, epsilon: T::Epsilon, max_ulps: u32) -> bool {
+        T::ulps_eq(&self.get(), &other.get(), epsilon, max_ulps)
+    }
+}
+
+impl<T: UlpsEq> UlpsEq for cell::RefCell<T> {
+    #[inline]
+    fn default_max_ulps() -> u32 {
+        T::default_max_ulps()
+    }
+
+    #[inline]
+    fn ulps_eq(&self, other: &cell::RefCell<T>, epsilon: T::Epsilon, max_ulps: u32) -> bool {
+        T::ulps_eq(&self.borrow(), &other.borrow(), epsilon, max_ulps)
+    }
+}
+
+impl<T: UlpsEq> UlpsEq for [T]
+    where T::Epsilon: Clone
+{
+    #[inline]
+    fn default_max_ulps() -> u32 {
+        T::default_max_ulps()
+    }
+
+    #[inline]
+    fn ulps_eq(&self, other: &[T], epsilon: T::Epsilon, max_ulps: u32) -> bool {
+        self.len() == other.len() &&
+        Iterator::zip(self.iter(), other).all(|(x, y)| {
+                                                  T::ulps_eq(x,
+                                                             y,
+                                                             epsilon.clone(),
+                                                             max_ulps.clone())
+                                              })
     }
 }
 
