@@ -57,6 +57,11 @@ macro_rules! impl_relative_eq {
                     return true;
                 }
 
+                // Handle remaining infinities
+                if $T::is_infinite(*self) || $T::is_infinite(*other) {
+                    return false;
+                }
+
                 let abs_diff = $T::abs(self - other);
 
                 // For when the numbers are really close together
@@ -66,11 +71,6 @@ macro_rules! impl_relative_eq {
 
                 let abs_self = $T::abs(*self);
                 let abs_other = $T::abs(*other);
-
-                // Handle oppsite infinities
-                if abs_self == abs_other && abs_diff == abs_self {
-                    return false;
-                }
 
                 let largest = if abs_other > abs_self { abs_other } else { abs_self };
 
