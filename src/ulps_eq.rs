@@ -1,10 +1,10 @@
 #[cfg(feature="no_std")]
-use core::{cell, mem};
+use core::cell;
 #[cfg(feature="no_std")]
 #[cfg_attr(feature="no_std", allow(unused_imports))] // HACK: seems to be a bug in this lint!
 use core::num::Float;
 #[cfg(not(feature="no_std"))]
-use std::{cell, mem};
+use std::cell;
 #[cfg(feature="use_complex")]
 use num_complex::Complex;
 
@@ -55,8 +55,8 @@ macro_rules! impl_ulps_eq {
                 }
 
                 // ULPS difference comparison
-                let int_self: $U = unsafe { mem::transmute(*self) };
-                let int_other: $U = unsafe { mem::transmute(*other) };
+                let int_self: $U = $T::to_bits(*self) as $U;
+                let int_other: $U = $T::to_bits(*other) as $U;
 
                 $U::abs(int_self - int_other) < max_ulps as $U
             }
