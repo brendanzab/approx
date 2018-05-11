@@ -20,7 +20,7 @@ matrix:
 
 before_script:
   - export PATH="$PATH:$HOME/.cargo/bin"
-  - which rustfmt || rustup component add rustfmt-preview && cargo fmt -- --version
+  - rustup component add rustfmt-preview && cargo fmt -- --version
 
 script:
   - cargo fmt -- --write-mode=diff
