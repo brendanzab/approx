@@ -154,12 +154,14 @@
 //! - [What Every Computer Scientist Should Know About Floating-Point Arithmetic]
 //!   (https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html)
 
-#![cfg_attr(feature="no_std", no_std)]
-#![cfg_attr(feature="no_std", feature(core_float))]
+#![cfg_attr(not(feature = "std"), no_std)]
 
 extern crate num_traits;
 #[cfg(feature="use_complex")]
 extern crate num_complex;
+
+#[cfg(not(feature = "std"))]
+use core as std;
 
 mod abs_diff_eq;
 mod relative_eq;

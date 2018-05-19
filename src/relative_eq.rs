@@ -1,9 +1,4 @@
-#[cfg(feature="no_std")]
-use core::{cell, f32, f64};
-#[cfg(not(feature="no_std"))]
 use std::{cell, f32, f64};
-#[cfg(feature="no_std")]
-#[cfg_attr(feature="no_std", allow(unused_imports))] // HACK: seems to be a bug in this lint!
 use num_traits::float::FloatCore;
 #[cfg(feature="use_complex")]
 use num_complex::Complex;

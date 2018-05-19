@@ -26,7 +26,8 @@ keywords = [
 name = "approx"
 
 [features]
-no_std = []
+default = [ "std" ]
+std = []
 use_complex = ["num-complex"]
 
 [dependencies]
