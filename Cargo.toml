@@ -30,4 +30,5 @@ no_std = []
 use_complex = ["num-complex"]
 
 [dependencies]
+num-traits = { version = "0.2.0", default_features = false }
 num-complex = { version = "0.1.37", optional = true }

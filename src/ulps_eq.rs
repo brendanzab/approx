@@ -2,7 +2,7 @@
 use core::{cell, mem};
 #[cfg(feature="no_std")]
 #[cfg_attr(feature="no_std", allow(unused_imports))] // HACK: seems to be a bug in this lint!
-use core::num::Float;
+use num_traits::float::FloatCore;
 #[cfg(not(feature="no_std"))]
 use std::{cell, mem};
 #[cfg(feature="use_complex")]

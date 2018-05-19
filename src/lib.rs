@@ -157,6 +157,7 @@
 #![cfg_attr(feature="no_std", no_std)]
 #![cfg_attr(feature="no_std", feature(core_float))]
 
+extern crate num_traits;
 #[cfg(feature="use_complex")]
 extern crate num_complex;
 

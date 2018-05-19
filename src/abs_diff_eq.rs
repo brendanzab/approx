@@ -4,7 +4,7 @@ use core::{cell, f32, f64};
 use std::{cell, f32, f64};
 #[cfg(feature="no_std")]
 #[cfg_attr(feature="no_std", allow(unused_imports))] // HACK: seems to be a bug in this lint!
-use core::num::Float;
+use num_traits::float::FloatCore;
 #[cfg(feature="use_complex")]
 use num_complex::Complex;
 
