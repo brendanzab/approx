@@ -283,7 +283,6 @@ mod test_f64 {
         assert_relative_ne!(0.0f64, -1e-40f64, epsilon = 1e-41f64);
     }
 
-
     #[test]
     fn test_max() {
         assert_relative_eq!(f64::MAX, f64::MAX);

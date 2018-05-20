@@ -387,7 +387,7 @@ mod test_slice {
     }
 }
 
-#[cfg(feature="use_complex")]
+#[cfg(feature = "use_complex")]
 mod test_complex {
     extern crate num_complex;
     pub use self::num_complex::Complex;

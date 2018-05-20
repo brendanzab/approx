@@ -1,10 +1,9 @@
-use std::{cell, mem};
-use num_traits::float::FloatCore;
-#[cfg(feature="use_complex")]
+#[cfg(feature = "use_complex")]
 use num_complex::Complex;
+use num_traits::float::FloatCore;
+use std::{cell, mem};
 
 use AbsDiffEq;
-
 
 /// Equality comparisons between two numbers using both the absolute difference and ULPs
 /// (Units in Last Place) based comparisons.
@@ -23,11 +22,9 @@ pub trait UlpsEq: AbsDiffEq {
     }
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Base implementations
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 // Implementation based on: [Comparing Floating Point Numbers, 2012 Edition]
 // (https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/)
@@ -35,7 +32,9 @@ macro_rules! impl_ulps_eq {
     ($T:ident, $U:ident) => {
         impl UlpsEq for $T {
             #[inline]
-            fn default_max_ulps() -> u32 { 4 }
+            fn default_max_ulps() -> u32 {
+                4
+            }
 
             #[inline]
             fn ulps_eq(&self, other: &$T, epsilon: $T, max_ulps: u32) -> bool {
@@ -56,17 +55,15 @@ macro_rules! impl_ulps_eq {
                 $U::abs(int_self - int_other) <= max_ulps as $U
             }
         }
-    }
+    };
 }
 
 impl_ulps_eq!(f32, i32);
 impl_ulps_eq!(f64, i64);
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Derived implementations
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 impl<'a, T: UlpsEq> UlpsEq for &'a T {
     #[inline]
@@ -117,7 +114,8 @@ impl<T: UlpsEq> UlpsEq for cell::RefCell<T> {
 }
 
 impl<T: UlpsEq> UlpsEq for [T]
-    where T::Epsilon: Clone
+where
+    T::Epsilon: Clone,
 {
     #[inline]
     fn default_max_ulps() -> u32 {
@@ -126,19 +124,16 @@ impl<T: UlpsEq> UlpsEq for [T]
 
     #[inline]
     fn ulps_eq(&self, other: &[T], epsilon: T::Epsilon, max_ulps: u32) -> bool {
-        self.len() == other.len() &&
-        Iterator::zip(self.iter(), other).all(|(x, y)| {
-                                                  T::ulps_eq(x,
-                                                             y,
-                                                             epsilon.clone(),
-                                                             max_ulps.clone())
-                                              })
+        self.len() == other.len()
+            && Iterator::zip(self.iter(), other)
+                .all(|(x, y)| T::ulps_eq(x, y, epsilon.clone(), max_ulps.clone()))
     }
 }
 
-#[cfg(feature="use_complex")]
+#[cfg(feature = "use_complex")]
 impl<T: UlpsEq> UlpsEq for Complex<T>
-    where T::Epsilon: Clone
+where
+    T::Epsilon: Clone,
 {
     #[inline]
     fn default_max_ulps() -> u32 {
@@ -147,7 +142,7 @@ impl<T: UlpsEq> UlpsEq for Complex<T>
 
     #[inline]
     fn ulps_eq(&self, other: &Complex<T>, epsilon: T::Epsilon, max_ulps: u32) -> bool {
-        T::ulps_eq(&self.re, &other.re, epsilon.clone(), max_ulps) &&
-        T::ulps_eq(&self.im, &other.im, epsilon.clone(), max_ulps)
+        T::ulps_eq(&self.re, &other.re, epsilon.clone(), max_ulps)
+            && T::ulps_eq(&self.im, &other.im, epsilon.clone(), max_ulps)
     }
 }
