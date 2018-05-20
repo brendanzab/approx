@@ -132,6 +132,12 @@ mod test_f32 {
     }
 
     #[test]
+    fn test_zero_infinity() {
+        assert_relative_ne!(0f32, f32::INFINITY);
+        assert_relative_ne!(0f32, f32::NEG_INFINITY);
+    }
+
+    #[test]
     fn test_nan() {
         assert_relative_ne!(f32::NAN, f32::NAN);
 
@@ -388,7 +394,7 @@ mod test_slice {
     }
 }
 
-#[cfg(feature="use_complex")]
+#[cfg(feature = "use_complex")]
 mod test_complex {
     extern crate num_complex;
     pub use self::num_complex::Complex;
