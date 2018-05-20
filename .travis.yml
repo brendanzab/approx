@@ -9,14 +9,12 @@ cache: cargo
 
 env:
   - CARGO_FEATURES=""
-  - CARGO_FEATURES="use_complex"
+  - CARGO_FEATURES="std"
+  - CARGO_FEATURES="std use_complex"
 
 matrix:
-  include:
+  allow_failures:
     - rust: nightly
-      env: CARGO_FEATURES="no_std"
-    - rust: nightly
-      env: CARGO_FEATURES="no_std use_complex"
 
 before_script:
   - export PATH="$PATH:$HOME/.cargo/bin"
