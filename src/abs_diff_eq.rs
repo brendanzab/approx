@@ -1,5 +1,6 @@
 #[cfg(feature = "use_complex")]
 use num_complex::Complex;
+#[cfg(not(feature = "std"))]
 use num_traits::float::FloatCore;
 use std::{cell, f32, f64};
 
