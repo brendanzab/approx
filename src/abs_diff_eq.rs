@@ -1,8 +1,8 @@
-use std::{cell, f32, f64};
-use num_traits::float::FloatCore;
-#[cfg(feature="use_complex")]
+#[cfg(feature = "use_complex")]
 use num_complex::Complex;
-
+#[cfg(not(feature = "std"))]
+use num_traits::float::FloatCore;
+use std::{cell, f32, f64};
 
 /// Equality that is defined using the absolute difference of two numbers.
 pub trait AbsDiffEq: PartialEq {
@@ -25,11 +25,9 @@ pub trait AbsDiffEq: PartialEq {
     }
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Base implementations
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 macro_rules! impl_unsigned_abs_diff_eq {
     ($T:ident, $default_epsilon:expr) => {
@@ -37,14 +35,20 @@ macro_rules! impl_unsigned_abs_diff_eq {
             type Epsilon = $T;
 
             #[inline]
-            fn default_epsilon() -> $T { $default_epsilon }
+            fn default_epsilon() -> $T {
+                $default_epsilon
+            }
 
             #[inline]
             fn abs_diff_eq(&self, other: &$T, epsilon: $T) -> bool {
-                (if self > other { self - other } else { other - self }) <= epsilon
+                (if self > other {
+                    self - other
+                } else {
+                    other - self
+                }) <= epsilon
             }
         }
-    }
+    };
 }
 
 impl_unsigned_abs_diff_eq!(u8, 0);
@@ -59,14 +63,16 @@ macro_rules! impl_signed_abs_diff_eq {
             type Epsilon = $T;
 
             #[inline]
-            fn default_epsilon() -> $T { $default_epsilon }
+            fn default_epsilon() -> $T {
+                $default_epsilon
+            }
 
             #[inline]
             fn abs_diff_eq(&self, other: &$T, epsilon: $T) -> bool {
                 $T::abs(self - other) <= epsilon
             }
         }
-    }
+    };
 }
 
 impl_signed_abs_diff_eq!(i8, 0);
@@ -77,11 +83,9 @@ impl_signed_abs_diff_eq!(isize, 0);
 impl_signed_abs_diff_eq!(f32, f32::EPSILON);
 impl_signed_abs_diff_eq!(f64, f64::EPSILON);
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Derived implementations
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 impl<'a, T: AbsDiffEq> AbsDiffEq for &'a T {
     type Epsilon = T::Epsilon;
@@ -140,7 +144,8 @@ impl<T: AbsDiffEq> AbsDiffEq for cell::RefCell<T> {
 }
 
 impl<T: AbsDiffEq> AbsDiffEq for [T]
-    where T::Epsilon: Clone
+where
+    T::Epsilon: Clone,
 {
     type Epsilon = T::Epsilon;
 
@@ -151,14 +156,15 @@ impl<T: AbsDiffEq> AbsDiffEq for [T]
 
     #[inline]
     fn abs_diff_eq(&self, other: &[T], epsilon: T::Epsilon) -> bool {
-        self.len() == other.len() &&
-        Iterator::zip(self.iter(), other).all(|(x, y)| T::abs_diff_eq(x, y, epsilon.clone()))
+        self.len() == other.len()
+            && Iterator::zip(self.iter(), other).all(|(x, y)| T::abs_diff_eq(x, y, epsilon.clone()))
     }
 }
 
-#[cfg(feature="use_complex")]
+#[cfg(feature = "use_complex")]
 impl<T: AbsDiffEq> AbsDiffEq for Complex<T>
-    where T::Epsilon: Clone
+where
+    T::Epsilon: Clone,
 {
     type Epsilon = T::Epsilon;
 
@@ -169,7 +175,7 @@ impl<T: AbsDiffEq> AbsDiffEq for Complex<T>
 
     #[inline]
     fn abs_diff_eq(&self, other: &Complex<T>, epsilon: T::Epsilon) -> bool {
-        T::abs_diff_eq(&self.re, &other.re, epsilon.clone()) &&
-        T::abs_diff_eq(&self.im, &other.im, epsilon.clone())
+        T::abs_diff_eq(&self.re, &other.re, epsilon.clone())
+            && T::abs_diff_eq(&self.im, &other.im, epsilon.clone())
     }
 }

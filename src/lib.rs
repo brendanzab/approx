@@ -156,9 +156,9 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
-extern crate num_traits;
-#[cfg(feature="use_complex")]
+#[cfg(feature = "use_complex")]
 extern crate num_complex;
+extern crate num_traits;
 
 #[cfg(not(feature = "std"))]
 use core as std;
@@ -196,12 +196,15 @@ pub struct AbsDiff<T: AbsDiffEq + ?Sized> {
 impl<T: AbsDiffEq + ?Sized> Default for AbsDiff<T> {
     #[inline]
     fn default() -> AbsDiff<T> {
-        AbsDiff { epsilon: T::default_epsilon() }
+        AbsDiff {
+            epsilon: T::default_epsilon(),
+        }
     }
 }
 
 impl<T> AbsDiff<T>
-    where T: AbsDiffEq + ?Sized
+where
+    T: AbsDiffEq + ?Sized,
 {
     /// Replace the epsilon value with the one specified.
     #[inline]
@@ -312,7 +315,8 @@ pub struct Ulps<T: UlpsEq + ?Sized> {
 }
 
 impl<T: UlpsEq + ?Sized> Default for Ulps<T>
-    where T: UlpsEq
+where
+    T: UlpsEq,
 {
     #[inline]
     fn default() -> Ulps<T> {

@@ -281,7 +281,6 @@ mod test_f64 {
         assert_abs_diff_ne!(0.0f64, -1e-40f64, epsilon = 1e-41f64);
     }
 
-
     #[test]
     fn test_max() {
         assert_abs_diff_eq!(f64::MAX, f64::MAX);
@@ -392,7 +391,7 @@ mod test_slice {
     }
 }
 
-#[cfg(feature="use_complex")]
+#[cfg(feature = "use_complex")]
 mod test_complex {
     extern crate num_complex;
     pub use self::num_complex::Complex;
