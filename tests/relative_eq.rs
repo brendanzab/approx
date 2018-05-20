@@ -127,8 +127,6 @@ mod test_f32 {
         assert_relative_eq!(f32::INFINITY, f32::INFINITY);
         assert_relative_eq!(f32::NEG_INFINITY, f32::NEG_INFINITY);
         assert_relative_ne!(f32::NEG_INFINITY, f32::INFINITY);
-        assert_relative_eq!(f32::INFINITY, f32::MAX);
-        assert_relative_eq!(f32::NEG_INFINITY, -f32::MAX);
     }
 
     #[test]
@@ -301,8 +299,6 @@ mod test_f64 {
         assert_relative_eq!(f64::INFINITY, f64::INFINITY);
         assert_relative_eq!(f64::NEG_INFINITY, f64::NEG_INFINITY);
         assert_relative_ne!(f64::NEG_INFINITY, f64::INFINITY);
-        assert_relative_eq!(f64::INFINITY, f64::MAX);
-        assert_relative_eq!(f64::NEG_INFINITY, -f64::MAX);
     }
 
     #[test]
