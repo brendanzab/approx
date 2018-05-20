@@ -58,7 +58,7 @@ macro_rules! impl_ulps_eq {
                 let int_self: $U = unsafe { mem::transmute(*self) };
                 let int_other: $U = unsafe { mem::transmute(*other) };
 
-                $U::abs(int_self - int_other) < max_ulps as $U
+                $U::abs(int_self - int_other) <= max_ulps as $U
             }
         }
     }
