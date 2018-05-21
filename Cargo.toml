@@ -16,10 +16,6 @@ keywords = [
     "comparison",
     "equality",
     "float",
-    "floating-point",
-    "fuzzy",
-    "math",
-    "test",
 ]
 
 [lib]
