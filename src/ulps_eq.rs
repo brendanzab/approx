@@ -66,7 +66,7 @@ impl_ulps_eq!(f64, i64);
 // Derived implementations
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-impl<'a, T: UlpsEq> UlpsEq for &'a T {
+impl<'a, T: UlpsEq + ?Sized> UlpsEq for &'a T {
     #[inline]
     fn default_max_ulps() -> u32 {
         T::default_max_ulps()
@@ -78,7 +78,7 @@ impl<'a, T: UlpsEq> UlpsEq for &'a T {
     }
 }
 
-impl<'a, T: UlpsEq> UlpsEq for &'a mut T {
+impl<'a, T: UlpsEq + ?Sized> UlpsEq for &'a mut T {
     #[inline]
     fn default_max_ulps() -> u32 {
         T::default_max_ulps()
@@ -102,7 +102,7 @@ impl<T: UlpsEq + Copy> UlpsEq for cell::Cell<T> {
     }
 }
 
-impl<T: UlpsEq> UlpsEq for cell::RefCell<T> {
+impl<T: UlpsEq + ?Sized> UlpsEq for cell::RefCell<T> {
     #[inline]
     fn default_max_ulps() -> u32 {
         T::default_max_ulps()

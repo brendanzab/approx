@@ -87,7 +87,7 @@ impl_signed_abs_diff_eq!(f64, f64::EPSILON);
 // Derived implementations
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-impl<'a, T: AbsDiffEq> AbsDiffEq for &'a T {
+impl<'a, T: AbsDiffEq + ?Sized> AbsDiffEq for &'a T {
     type Epsilon = T::Epsilon;
 
     #[inline]
@@ -101,7 +101,7 @@ impl<'a, T: AbsDiffEq> AbsDiffEq for &'a T {
     }
 }
 
-impl<'a, T: AbsDiffEq> AbsDiffEq for &'a mut T {
+impl<'a, T: AbsDiffEq + ?Sized> AbsDiffEq for &'a mut T {
     type Epsilon = T::Epsilon;
 
     #[inline]
@@ -129,7 +129,7 @@ impl<T: AbsDiffEq + Copy> AbsDiffEq for cell::Cell<T> {
     }
 }
 
-impl<T: AbsDiffEq> AbsDiffEq for cell::RefCell<T> {
+impl<T: AbsDiffEq + ?Sized> AbsDiffEq for cell::RefCell<T> {
     type Epsilon = T::Epsilon;
 
     #[inline]
