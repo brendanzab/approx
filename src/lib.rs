@@ -156,7 +156,7 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
-#[cfg(feature = "use_complex")]
+#[cfg(feature = "num-complex")]
 extern crate num_complex;
 extern crate num_traits;
 

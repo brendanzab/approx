@@ -10,7 +10,7 @@ cache: cargo
 env:
   - CARGO_FEATURES=""
   - CARGO_FEATURES="std"
-  - CARGO_FEATURES="std use_complex"
+  - CARGO_FEATURES="std num-complex"
 
 matrix:
   allow_failures:
