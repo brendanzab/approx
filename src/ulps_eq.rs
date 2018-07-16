@@ -1,4 +1,4 @@
-#[cfg(feature = "use_complex")]
+#[cfg(feature = "num-complex")]
 use num_complex::Complex;
 #[cfg(not(feature = "std"))]
 use num_traits::float::FloatCore;
@@ -131,7 +131,7 @@ where
     }
 }
 
-#[cfg(feature = "use_complex")]
+#[cfg(feature = "num-complex")]
 impl<T: UlpsEq> UlpsEq for Complex<T>
 where
     T::Epsilon: Clone,
