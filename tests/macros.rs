@@ -96,3 +96,20 @@ fn test_ulps_ne_trailing_commas() {
     let _: bool = ulps_ne!(1.0, 1.0,);
     let _: bool = ulps_ne!(1.0, 1.0, epsilon = 1.0, max_ulps = 1,);
 }
+
+#[test]
+#[should_panic]
+fn test_panic_message_1() {
+    let x = 1.0f32;
+    let y = 2.0f32;
+    assert_abs_diff_eq!(1.0f32, 2.0f32; "Should panic. x = {:?}, y = {:?}", x, y);
+}
+
+#[test]
+#[should_panic]
+fn test_panic_message_2() {
+    let x = 0.0f32;
+    let y = 1e-40f32;
+    let epsilon = 0.0f32;
+    assert_abs_diff_eq!(x, y, epsilon = epsilon; "Should panic. x = {:?}, y = {:?}, epsilon: {:?}", x, y, epsilon);
+}

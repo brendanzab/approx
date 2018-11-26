@@ -99,7 +99,24 @@ macro_rules! __assert_approx {
             );
         }
     }};
-    ($eq:ident, $given:expr, $expected:expr, $($opt:ident = $val:expr),+) => {{
+    ($eq:ident, $given:expr, $expected:expr; $($arg:tt)*) => {{
+        let (given, expected) = (&($given), &($expected));
+
+        if !$eq!(*given, *expected) {
+            panic!(
+"assert_{}!({}, {})
+
+    {}
+
+",
+                stringify!($eq),
+                stringify!($given),
+                stringify!($expected),
+                format_args!($($arg)*),
+            );
+        }
+    }};
+    ($eq:ident, $given:expr, $expected:expr $(, $opt:ident = $val:expr)+) => {{
         let (given, expected) = (&($given), &($expected));
 
         if !$eq!(*given, *expected, $($opt = $val),+) {
@@ -118,6 +135,24 @@ macro_rules! __assert_approx {
             );
         }
     }};
+    ($eq:ident, $given:expr, $expected:expr $(, $opt:ident = $val:expr)+; $($arg:tt)*) => {{
+        let (given, expected) = (&($given), &($expected));
+
+        if !$eq!(*given, *expected, $($opt = $val),+) {
+            panic!(
+"assert_{}!({}, {}, {})
+
+    {}
+
+",
+                stringify!($eq),
+                stringify!($given),
+                stringify!($expected),
+                stringify!($($opt = $val),+),
+                format_args!($($arg)*),
+            );
+        }
+    }};
 }
 
 /// An assertion that delegates to `abs_diff_eq!`, and panics with a helpful error on failure.
@@ -126,8 +161,8 @@ macro_rules! assert_abs_diff_eq {
     ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => {
         __assert_approx!(abs_diff_eq, $given, $expected $(, $opt = $val)*)
     };
-    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*,) => {
-        __assert_approx!(abs_diff_eq, $given, $expected $(, $opt = $val)*)
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*; $($arg:tt)*) => {
+        __assert_approx!(abs_diff_eq, $given, $expected $(, $opt = $val)*; $($arg)*)
     };
 }
 
@@ -137,8 +172,8 @@ macro_rules! assert_abs_diff_ne {
     ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => {
         __assert_approx!(abs_diff_ne, $given, $expected $(, $opt = $val)*)
     };
-    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*,) => {
-        __assert_approx!(abs_diff_ne, $given, $expected $(, $opt = $val)*)
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*; $($arg:tt)*) => {
+        __assert_approx!(abs_diff_ne, $given, $expected $(, $opt = $val)*; $($arg)*)
     };
 }
 
@@ -148,8 +183,8 @@ macro_rules! assert_relative_eq {
     ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => {
         __assert_approx!(relative_eq, $given, $expected $(, $opt = $val)*)
     };
-    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*,) => {
-        __assert_approx!(relative_eq, $given, $expected $(, $opt = $val)*)
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*; $($arg:tt)*) => {
+        __assert_approx!(relative_eq, $given, $expected $(, $opt = $val)*; $($arg)*)
     };
 }
 
@@ -159,8 +194,8 @@ macro_rules! assert_relative_ne {
     ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => {
         __assert_approx!(relative_ne, $given, $expected $(, $opt = $val)*)
     };
-    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*,) => {
-        __assert_approx!(relative_ne, $given, $expected $(, $opt = $val)*)
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*; $($arg:tt)*) => {
+        __assert_approx!(relative_ne, $given, $expected $(, $opt = $val)*; $($arg)*)
     };
 }
 
@@ -170,8 +205,8 @@ macro_rules! assert_ulps_eq {
     ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => {
         __assert_approx!(ulps_eq, $given, $expected $(, $opt = $val)*)
     };
-    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*,) => {
-        __assert_approx!(ulps_eq, $given, $expected $(, $opt = $val)*)
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*; $($arg:tt)*) => {
+        __assert_approx!(ulps_eq, $given, $expected $(, $opt = $val)*); $($arg)*
     };
 }
 
@@ -181,7 +216,7 @@ macro_rules! assert_ulps_ne {
     ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => {
         __assert_approx!(ulps_ne, $given, $expected $(, $opt = $val)*)
     };
-    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*,) => {
-        __assert_approx!(ulps_ne, $given, $expected $(, $opt = $val)*)
+    ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*; $($arg:tt)*) => {
+        __assert_approx!(ulps_ne, $given, $expected $(, $opt = $val)*); $($arg)*
     };
 }
