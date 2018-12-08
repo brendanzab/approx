@@ -18,6 +18,7 @@ matrix:
     - rust: nightly
 
 before_script:
+  - if [ "$TRAVIS_RUST_VERSION" == "1.20.0" ]; then rm -f tests/macro_import.rs; fi
   - cargo build --verbose
 
 script:
