@@ -117,20 +117,21 @@ impl<T: UlpsEq + ?Sized> UlpsEq for cell::RefCell<T> {
     }
 }
 
-impl<T: UlpsEq> UlpsEq for [T]
+impl<A, B> UlpsEq<[B]> for [A]
 where
-    T::Epsilon: Clone,
+    A: UlpsEq<B>,
+    A::Epsilon: Clone,
 {
     #[inline]
     fn default_max_ulps() -> u32 {
-        T::default_max_ulps()
+        A::default_max_ulps()
     }
 
     #[inline]
-    fn ulps_eq(&self, other: &[T], epsilon: T::Epsilon, max_ulps: u32) -> bool {
+    fn ulps_eq(&self, other: &[B], epsilon: A::Epsilon, max_ulps: u32) -> bool {
         self.len() == other.len()
             && Iterator::zip(self.iter(), other)
-                .all(|(x, y)| T::ulps_eq(x, y, epsilon.clone(), max_ulps.clone()))
+                .all(|(x, y)| A::ulps_eq(x, y, epsilon.clone(), max_ulps.clone()))
     }
 }
 

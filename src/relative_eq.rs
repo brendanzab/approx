@@ -155,20 +155,21 @@ impl<T: RelativeEq + ?Sized> RelativeEq for cell::RefCell<T> {
     }
 }
 
-impl<T: RelativeEq> RelativeEq for [T]
+impl<A, B> RelativeEq<[B]> for [A]
 where
-    T::Epsilon: Clone,
+    A: RelativeEq<B>,
+    A::Epsilon: Clone,
 {
     #[inline]
-    fn default_max_relative() -> T::Epsilon {
-        T::default_max_relative()
+    fn default_max_relative() -> A::Epsilon {
+        A::default_max_relative()
     }
 
     #[inline]
-    fn relative_eq(&self, other: &[T], epsilon: T::Epsilon, max_relative: T::Epsilon) -> bool {
+    fn relative_eq(&self, other: &[B], epsilon: A::Epsilon, max_relative: A::Epsilon) -> bool {
         self.len() == other.len()
             && Iterator::zip(self.iter(), other)
-                .all(|(x, y)| T::relative_eq(x, y, epsilon.clone(), max_relative.clone()))
+                .all(|(x, y)| A::relative_eq(x, y, epsilon.clone(), max_relative.clone()))
     }
 }
 

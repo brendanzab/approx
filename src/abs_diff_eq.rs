@@ -146,21 +146,22 @@ impl<T: AbsDiffEq + ?Sized> AbsDiffEq for cell::RefCell<T> {
     }
 }
 
-impl<T: AbsDiffEq> AbsDiffEq for [T]
+impl<A, B> AbsDiffEq<[B]> for [A]
 where
-    T::Epsilon: Clone,
+    A: AbsDiffEq<B>,
+    A::Epsilon: Clone,
 {
-    type Epsilon = T::Epsilon;
+    type Epsilon = A::Epsilon;
 
     #[inline]
-    fn default_epsilon() -> T::Epsilon {
-        T::default_epsilon()
+    fn default_epsilon() -> A::Epsilon {
+        A::default_epsilon()
     }
 
     #[inline]
-    fn abs_diff_eq(&self, other: &[T], epsilon: T::Epsilon) -> bool {
+    fn abs_diff_eq(&self, other: &[B], epsilon: A::Epsilon) -> bool {
         self.len() == other.len()
-            && Iterator::zip(self.iter(), other).all(|(x, y)| T::abs_diff_eq(x, y, epsilon.clone()))
+            && Iterator::zip(self.iter(), other).all(|(x, y)| A::abs_diff_eq(x, y, epsilon.clone()))
     }
 }
 
