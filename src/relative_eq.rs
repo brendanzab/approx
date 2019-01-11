@@ -8,7 +8,10 @@ use AbsDiffEq;
 
 /// Equality comparisons between two numbers using both the absolute difference and
 /// relative based comparisons.
-pub trait RelativeEq: AbsDiffEq {
+pub trait RelativeEq<Rhs = Self>: AbsDiffEq<Rhs>
+where
+    Rhs: ?Sized,
+{
     /// The default relative tolerance for testing values that are far-apart.
     ///
     /// This is used when no `max_relative` value is supplied to the `relative_eq` macro.
@@ -17,7 +20,7 @@ pub trait RelativeEq: AbsDiffEq {
     /// A test for equality that uses a relative comparison if the values are far apart.
     fn relative_eq(
         &self,
-        other: &Self,
+        other: &Rhs,
         epsilon: Self::Epsilon,
         max_relative: Self::Epsilon,
     ) -> bool;
@@ -25,7 +28,7 @@ pub trait RelativeEq: AbsDiffEq {
     /// The inverse of `ApproxEq::relative_eq`.
     fn relative_ne(
         &self,
-        other: &Self,
+        other: &Rhs,
         epsilon: Self::Epsilon,
         max_relative: Self::Epsilon,
     ) -> bool {

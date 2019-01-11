@@ -5,7 +5,10 @@ use num_traits::float::FloatCore;
 use std::{cell, f32, f64};
 
 /// Equality that is defined using the absolute difference of two numbers.
-pub trait AbsDiffEq: PartialEq {
+pub trait AbsDiffEq<Rhs = Self>: PartialEq<Rhs>
+where
+    Rhs: ?Sized,
+{
     /// Used for specifying relative comparisons.
     type Epsilon;
 
@@ -17,10 +20,10 @@ pub trait AbsDiffEq: PartialEq {
 
     /// A test for equality that uses the absolute difference to compute the approximate
     /// equality of two numbers.
-    fn abs_diff_eq(&self, other: &Self, epsilon: Self::Epsilon) -> bool;
+    fn abs_diff_eq(&self, other: &Rhs, epsilon: Self::Epsilon) -> bool;
 
     /// The inverse of `ApproxEq::abs_diff_eq`.
-    fn abs_diff_ne(&self, other: &Self, epsilon: Self::Epsilon) -> bool {
+    fn abs_diff_ne(&self, other: &Rhs, epsilon: Self::Epsilon) -> bool {
         !Self::abs_diff_eq(self, other, epsilon)
     }
 }
