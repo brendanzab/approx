@@ -188,40 +188,49 @@ pub use ulps_eq::UlpsEq;
 /// AbsDiff::default().eq(&1.0, &1.0);
 /// AbsDiff::default().epsilon(f64::EPSILON).eq(&1.0, &1.0);
 /// ```
-pub struct AbsDiff<T: AbsDiffEq + ?Sized> {
+pub struct AbsDiff<A, B = A>
+where
+    A: AbsDiffEq<B> + ?Sized,
+    B: ?Sized,
+{
     /// The tolerance to use when testing values that are close together.
-    pub epsilon: T::Epsilon,
+    pub epsilon: A::Epsilon,
 }
 
-impl<T: AbsDiffEq + ?Sized> Default for AbsDiff<T> {
+impl<A, B> Default for AbsDiff<A, B>
+where
+    A: AbsDiffEq<B> + ?Sized,
+    B: ?Sized,
+{
     #[inline]
-    fn default() -> AbsDiff<T> {
+    fn default() -> AbsDiff<A, B> {
         AbsDiff {
-            epsilon: T::default_epsilon(),
+            epsilon: A::default_epsilon(),
         }
     }
 }
 
-impl<T> AbsDiff<T>
+impl<A, B> AbsDiff<A, B>
 where
-    T: AbsDiffEq + ?Sized,
+    A: AbsDiffEq<B> + ?Sized,
+    B: ?Sized,
 {
     /// Replace the epsilon value with the one specified.
     #[inline]
-    pub fn epsilon(self, epsilon: T::Epsilon) -> AbsDiff<T> {
+    pub fn epsilon(self, epsilon: A::Epsilon) -> AbsDiff<A, B> {
         AbsDiff { epsilon, ..self }
     }
 
     /// Peform the equality comparison
     #[inline]
-    pub fn eq(self, lhs: &T, rhs: &T) -> bool {
-        T::abs_diff_eq(lhs, rhs, self.epsilon)
+    pub fn eq(self, lhs: &A, rhs: &B) -> bool {
+        A::abs_diff_eq(lhs, rhs, self.epsilon)
     }
 
     /// Peform the inequality comparison
     #[inline]
-    pub fn ne(self, lhs: &T, rhs: &T) -> bool {
-        T::abs_diff_ne(lhs, rhs, self.epsilon)
+    pub fn ne(self, lhs: &A, rhs: &B) -> bool {
+        A::abs_diff_ne(lhs, rhs, self.epsilon)
     }
 }
 
@@ -243,33 +252,45 @@ where
 /// Relative::default().epsilon(f64::EPSILON).max_relative(1.0).eq(&1.0, &1.0);
 /// Relative::default().max_relative(1.0).epsilon(f64::EPSILON).eq(&1.0, &1.0);
 /// ```
-pub struct Relative<T: RelativeEq + ?Sized> {
+pub struct Relative<A, B = A>
+where
+    A: RelativeEq<B> + ?Sized,
+    B: ?Sized,
+{
     /// The tolerance to use when testing values that are close together.
-    pub epsilon: T::Epsilon,
+    pub epsilon: A::Epsilon,
     /// The relative tolerance for testing values that are far-apart.
-    pub max_relative: T::Epsilon,
+    pub max_relative: A::Epsilon,
 }
 
-impl<T: RelativeEq + ?Sized> Default for Relative<T> {
+impl<A, B> Default for Relative<A, B>
+where
+    A: RelativeEq<B> + ?Sized,
+    B: ?Sized,
+{
     #[inline]
-    fn default() -> Relative<T> {
+    fn default() -> Relative<A, B> {
         Relative {
-            epsilon: T::default_epsilon(),
-            max_relative: T::default_max_relative(),
+            epsilon: A::default_epsilon(),
+            max_relative: A::default_max_relative(),
         }
     }
 }
 
-impl<T: RelativeEq + ?Sized> Relative<T> {
+impl<A, B> Relative<A, B>
+where
+    A: RelativeEq<B> + ?Sized,
+    B: ?Sized,
+{
     /// Replace the epsilon value with the one specified.
     #[inline]
-    pub fn epsilon(self, epsilon: T::Epsilon) -> Relative<T> {
+    pub fn epsilon(self, epsilon: A::Epsilon) -> Relative<A, B> {
         Relative { epsilon, ..self }
     }
 
     /// Replace the maximum relative value with the one specified.
     #[inline]
-    pub fn max_relative(self, max_relative: T::Epsilon) -> Relative<T> {
+    pub fn max_relative(self, max_relative: A::Epsilon) -> Relative<A, B> {
         Relative {
             max_relative,
             ..self
@@ -278,14 +299,14 @@ impl<T: RelativeEq + ?Sized> Relative<T> {
 
     /// Peform the equality comparison
     #[inline]
-    pub fn eq(self, lhs: &T, rhs: &T) -> bool {
-        T::relative_eq(lhs, rhs, self.epsilon, self.max_relative)
+    pub fn eq(self, lhs: &A, rhs: &B) -> bool {
+        A::relative_eq(lhs, rhs, self.epsilon, self.max_relative)
     }
 
     /// Peform the inequality comparison
     #[inline]
-    pub fn ne(self, lhs: &T, rhs: &T) -> bool {
-        T::relative_ne(lhs, rhs, self.epsilon, self.max_relative)
+    pub fn ne(self, lhs: &A, rhs: &B) -> bool {
+        A::relative_ne(lhs, rhs, self.epsilon, self.max_relative)
     }
 }
 
@@ -307,48 +328,57 @@ impl<T: RelativeEq + ?Sized> Relative<T> {
 /// Ulps::default().epsilon(f64::EPSILON).max_ulps(4).eq(&1.0, &1.0);
 /// Ulps::default().max_ulps(4).epsilon(f64::EPSILON).eq(&1.0, &1.0);
 /// ```
-pub struct Ulps<T: UlpsEq + ?Sized> {
+pub struct Ulps<A, B = A>
+where
+    A: UlpsEq<B> + ?Sized,
+    B: ?Sized,
+{
     /// The tolerance to use when testing values that are close together.
-    pub epsilon: T::Epsilon,
+    pub epsilon: A::Epsilon,
     /// The ULPs to tolerate when testing values that are far-apart.
     pub max_ulps: u32,
 }
 
-impl<T: UlpsEq + ?Sized> Default for Ulps<T>
+impl<A, B> Default for Ulps<A, B>
 where
-    T: UlpsEq,
+    A: UlpsEq<B> + ?Sized,
+    B: ?Sized,
 {
     #[inline]
-    fn default() -> Ulps<T> {
+    fn default() -> Ulps<A, B> {
         Ulps {
-            epsilon: T::default_epsilon(),
-            max_ulps: T::default_max_ulps(),
+            epsilon: A::default_epsilon(),
+            max_ulps: A::default_max_ulps(),
         }
     }
 }
 
-impl<T: UlpsEq + ?Sized> Ulps<T> {
+impl<A, B> Ulps<A, B>
+where
+    A: UlpsEq<B> + ?Sized,
+    B: ?Sized,
+{
     /// Replace the epsilon value with the one specified.
     #[inline]
-    pub fn epsilon(self, epsilon: T::Epsilon) -> Ulps<T> {
+    pub fn epsilon(self, epsilon: A::Epsilon) -> Ulps<A, B> {
         Ulps { epsilon, ..self }
     }
 
     /// Replace the max ulps value with the one specified.
     #[inline]
-    pub fn max_ulps(self, max_ulps: u32) -> Ulps<T> {
+    pub fn max_ulps(self, max_ulps: u32) -> Ulps<A, B> {
         Ulps { max_ulps, ..self }
     }
 
     /// Peform the equality comparison
     #[inline]
-    pub fn eq(self, lhs: &T, rhs: &T) -> bool {
-        T::ulps_eq(lhs, rhs, self.epsilon, self.max_ulps)
+    pub fn eq(self, lhs: &A, rhs: &B) -> bool {
+        A::ulps_eq(lhs, rhs, self.epsilon, self.max_ulps)
     }
 
     /// Peform the inequality comparison
     #[inline]
-    pub fn ne(self, lhs: &T, rhs: &T) -> bool {
-        T::ulps_ne(lhs, rhs, self.epsilon, self.max_ulps)
+    pub fn ne(self, lhs: &A, rhs: &B) -> bool {
+        A::ulps_ne(lhs, rhs, self.epsilon, self.max_ulps)
     }
 }

@@ -8,7 +8,10 @@ use AbsDiffEq;
 
 /// Equality comparisons between two numbers using both the absolute difference and
 /// relative based comparisons.
-pub trait RelativeEq: AbsDiffEq {
+pub trait RelativeEq<Rhs = Self>: AbsDiffEq<Rhs>
+where
+    Rhs: ?Sized,
+{
     /// The default relative tolerance for testing values that are far-apart.
     ///
     /// This is used when no `max_relative` value is supplied to the `relative_eq` macro.
@@ -17,7 +20,7 @@ pub trait RelativeEq: AbsDiffEq {
     /// A test for equality that uses a relative comparison if the values are far apart.
     fn relative_eq(
         &self,
-        other: &Self,
+        other: &Rhs,
         epsilon: Self::Epsilon,
         max_relative: Self::Epsilon,
     ) -> bool;
@@ -25,7 +28,7 @@ pub trait RelativeEq: AbsDiffEq {
     /// The inverse of `ApproxEq::relative_eq`.
     fn relative_ne(
         &self,
-        other: &Self,
+        other: &Rhs,
         epsilon: Self::Epsilon,
         max_relative: Self::Epsilon,
     ) -> bool {
@@ -152,20 +155,21 @@ impl<T: RelativeEq + ?Sized> RelativeEq for cell::RefCell<T> {
     }
 }
 
-impl<T: RelativeEq> RelativeEq for [T]
+impl<A, B> RelativeEq<[B]> for [A]
 where
-    T::Epsilon: Clone,
+    A: RelativeEq<B>,
+    A::Epsilon: Clone,
 {
     #[inline]
-    fn default_max_relative() -> T::Epsilon {
-        T::default_max_relative()
+    fn default_max_relative() -> A::Epsilon {
+        A::default_max_relative()
     }
 
     #[inline]
-    fn relative_eq(&self, other: &[T], epsilon: T::Epsilon, max_relative: T::Epsilon) -> bool {
+    fn relative_eq(&self, other: &[B], epsilon: A::Epsilon, max_relative: A::Epsilon) -> bool {
         self.len() == other.len()
             && Iterator::zip(self.iter(), other)
-                .all(|(x, y)| T::relative_eq(x, y, epsilon.clone(), max_relative.clone()))
+                .all(|(x, y)| A::relative_eq(x, y, epsilon.clone(), max_relative.clone()))
     }
 }
 

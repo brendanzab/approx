@@ -5,7 +5,10 @@ use num_traits::float::FloatCore;
 use std::{cell, f32, f64};
 
 /// Equality that is defined using the absolute difference of two numbers.
-pub trait AbsDiffEq: PartialEq {
+pub trait AbsDiffEq<Rhs = Self>: PartialEq<Rhs>
+where
+    Rhs: ?Sized,
+{
     /// Used for specifying relative comparisons.
     type Epsilon;
 
@@ -17,10 +20,10 @@ pub trait AbsDiffEq: PartialEq {
 
     /// A test for equality that uses the absolute difference to compute the approximate
     /// equality of two numbers.
-    fn abs_diff_eq(&self, other: &Self, epsilon: Self::Epsilon) -> bool;
+    fn abs_diff_eq(&self, other: &Rhs, epsilon: Self::Epsilon) -> bool;
 
     /// The inverse of `ApproxEq::abs_diff_eq`.
-    fn abs_diff_ne(&self, other: &Self, epsilon: Self::Epsilon) -> bool {
+    fn abs_diff_ne(&self, other: &Rhs, epsilon: Self::Epsilon) -> bool {
         !Self::abs_diff_eq(self, other, epsilon)
     }
 }
@@ -143,21 +146,22 @@ impl<T: AbsDiffEq + ?Sized> AbsDiffEq for cell::RefCell<T> {
     }
 }
 
-impl<T: AbsDiffEq> AbsDiffEq for [T]
+impl<A, B> AbsDiffEq<[B]> for [A]
 where
-    T::Epsilon: Clone,
+    A: AbsDiffEq<B>,
+    A::Epsilon: Clone,
 {
-    type Epsilon = T::Epsilon;
+    type Epsilon = A::Epsilon;
 
     #[inline]
-    fn default_epsilon() -> T::Epsilon {
-        T::default_epsilon()
+    fn default_epsilon() -> A::Epsilon {
+        A::default_epsilon()
     }
 
     #[inline]
-    fn abs_diff_eq(&self, other: &[T], epsilon: T::Epsilon) -> bool {
+    fn abs_diff_eq(&self, other: &[B], epsilon: A::Epsilon) -> bool {
         self.len() == other.len()
-            && Iterator::zip(self.iter(), other).all(|(x, y)| T::abs_diff_eq(x, y, epsilon.clone()))
+            && Iterator::zip(self.iter(), other).all(|(x, y)| A::abs_diff_eq(x, y, epsilon.clone()))
     }
 }
 
