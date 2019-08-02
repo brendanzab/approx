@@ -22,7 +22,7 @@ where
     /// equality of two numbers.
     fn abs_diff_eq(&self, other: &Rhs, epsilon: Self::Epsilon) -> bool;
 
-    /// The inverse of `ApproxEq::abs_diff_eq`.
+    /// The inverse of `AbsDiffEq::abs_diff_eq`.
     fn abs_diff_ne(&self, other: &Rhs, epsilon: Self::Epsilon) -> bool {
         !Self::abs_diff_eq(self, other, epsilon)
     }

@@ -45,7 +45,7 @@
 //!
 //! # Implementing approximate equality for custom types
 //!
-//! The `ApproxEq` trait allows approximate equalities to be implemented on types, based on the
+//! The `*Eq` traits allow approximate equalities to be implemented on types, based on the
 //! fundamental floating point implementations.
 //!
 //! For example, we might want to be able to do approximate assertions on a complex number type:
@@ -93,7 +93,7 @@
 //! ```
 //!
 //! To do this we can implement `AbsDiffEq`, `RelativeEq` and `UlpsEq` generically in terms of a
-//! type parameter that also implements `ApproxEq`, `RelativeEq` and `UlpsEq` respectively. This
+//! type parameter that also implements `AbsDiffEq`, `RelativeEq` and `UlpsEq` respectively. This
 //! means that we can make comparisons for either `Complex<f32>` or `Complex<f64>`:
 //!
 //! ```rust

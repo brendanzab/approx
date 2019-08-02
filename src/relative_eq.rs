@@ -25,7 +25,7 @@ where
         max_relative: Self::Epsilon,
     ) -> bool;
 
-    /// The inverse of `ApproxEq::relative_eq`.
+    /// The inverse of `RelativeEq::relative_eq`.
     fn relative_ne(
         &self,
         other: &Rhs,
