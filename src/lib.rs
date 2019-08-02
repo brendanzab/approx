@@ -16,8 +16,8 @@
 //! based types, using either relative difference, or units in the last place (ULPs)
 //! comparisons.
 //!
-//! You can also use the `approx_{eq, ne}!` `assert_approx_{eq, ne}!` macros to test for equality
-//! using a more positional style.
+//! You can also use the `*_{eq, ne}!` and `assert_*_{eq, ne}!` macros to test for equality using a
+//! more positional style:
 //!
 //! ```rust
 //! #[macro_use]
