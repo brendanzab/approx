@@ -148,11 +148,11 @@
 //! Floating point is hard! Thanks goes to these links for helping to make things a _little_
 //! easier to understand:
 //!
-//! - [Comparing Floating Point Numbers, 2012 Edition]
-//!   (https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/)
+//! - [Comparing Floating Point Numbers, 2012 Edition](
+//!   https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/)
 //! - [The Floating Point Guide - Comparison](http://floating-point-gui.de/errors/comparison/)
-//! - [What Every Computer Scientist Should Know About Floating-Point Arithmetic]
-//!   (https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html)
+//! - [What Every Computer Scientist Should Know About Floating-Point Arithmetic](
+//!   https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html)
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
