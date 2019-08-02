@@ -14,15 +14,15 @@ where
 
     /// The default tolerance to use when testing values that are close together.
     ///
-    /// This is used when no `epsilon` value is supplied to the `abs_diff_eq!`, `relative_eq!`, or
-    /// `ulps_eq!` macros.
+    /// This is used when no `epsilon` value is supplied to the [`abs_diff_eq!`], [`relative_eq!`],
+    /// or [`ulps_eq!`] macros.
     fn default_epsilon() -> Self::Epsilon;
 
     /// A test for equality that uses the absolute difference to compute the approximate
     /// equality of two numbers.
     fn abs_diff_eq(&self, other: &Rhs, epsilon: Self::Epsilon) -> bool;
 
-    /// The inverse of `AbsDiffEq::abs_diff_eq`.
+    /// The inverse of [`AbsDiffEq::abs_diff_eq`].
     fn abs_diff_ne(&self, other: &Rhs, epsilon: Self::Epsilon) -> bool {
         !Self::abs_diff_eq(self, other, epsilon)
     }

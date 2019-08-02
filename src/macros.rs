@@ -120,7 +120,7 @@ macro_rules! __assert_approx {
     }};
 }
 
-/// An assertion that delegates to `abs_diff_eq!`, and panics with a helpful error on failure.
+/// An assertion that delegates to [`abs_diff_eq!`], and panics with a helpful error on failure.
 #[macro_export(local_inner_macros)]
 macro_rules! assert_abs_diff_eq {
     ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => {
@@ -131,7 +131,7 @@ macro_rules! assert_abs_diff_eq {
     };
 }
 
-/// An assertion that delegates to `abs_diff_ne!`, and panics with a helpful error on failure.
+/// An assertion that delegates to [`abs_diff_ne!`], and panics with a helpful error on failure.
 #[macro_export(local_inner_macros)]
 macro_rules! assert_abs_diff_ne {
     ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => {
@@ -142,7 +142,7 @@ macro_rules! assert_abs_diff_ne {
     };
 }
 
-/// An assertion that delegates to `relative_eq!`, and panics with a helpful error on failure.
+/// An assertion that delegates to [`relative_eq!`], and panics with a helpful error on failure.
 #[macro_export(local_inner_macros)]
 macro_rules! assert_relative_eq {
     ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => {
@@ -153,7 +153,7 @@ macro_rules! assert_relative_eq {
     };
 }
 
-/// An assertion that delegates to `relative_ne!`, and panics with a helpful error on failure.
+/// An assertion that delegates to [`relative_ne!`], and panics with a helpful error on failure.
 #[macro_export(local_inner_macros)]
 macro_rules! assert_relative_ne {
     ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => {
@@ -164,7 +164,7 @@ macro_rules! assert_relative_ne {
     };
 }
 
-/// An assertion that delegates to `ulps_eq!`, and panics with a helpful error on failure.
+/// An assertion that delegates to [`ulps_eq!`], and panics with a helpful error on failure.
 #[macro_export(local_inner_macros)]
 macro_rules! assert_ulps_eq {
     ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => {
@@ -175,7 +175,7 @@ macro_rules! assert_ulps_eq {
     };
 }
 
-/// An assertion that delegates to `ulps_ne!`, and panics with a helpful error on failure.
+/// An assertion that delegates to [`ulps_ne!`], and panics with a helpful error on failure.
 #[macro_export(local_inner_macros)]
 macro_rules! assert_ulps_ne {
     ($given:expr, $expected:expr $(, $opt:ident = $val:expr)*) => {

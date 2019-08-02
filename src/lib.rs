@@ -92,9 +92,9 @@
 //! # }
 //! ```
 //!
-//! To do this we can implement `AbsDiffEq`, `RelativeEq` and `UlpsEq` generically in terms of a
-//! type parameter that also implements `AbsDiffEq`, `RelativeEq` and `UlpsEq` respectively. This
-//! means that we can make comparisons for either `Complex<f32>` or `Complex<f64>`:
+//! To do this we can implement [`AbsDiffEq`], [`RelativeEq`] and [`UlpsEq`] generically in terms
+//! of a type parameter that also implements `AbsDiffEq`, `RelativeEq` and `UlpsEq` respectively.
+//! This means that we can make comparisons for either `Complex<f32>` or `Complex<f64>`:
 //!
 //! ```rust
 //! # use approx::{AbsDiffEq, RelativeEq, UlpsEq};
