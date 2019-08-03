@@ -14,7 +14,7 @@ where
 {
     /// The default relative tolerance for testing values that are far-apart.
     ///
-    /// This is used when no `max_relative` value is supplied to the `relative_eq` macro.
+    /// This is used when no `max_relative` value is supplied to the [`relative_eq`] macro.
     fn default_max_relative() -> Self::Epsilon;
 
     /// A test for equality that uses a relative comparison if the values are far apart.
@@ -25,7 +25,7 @@ where
         max_relative: Self::Epsilon,
     ) -> bool;
 
-    /// The inverse of `ApproxEq::relative_eq`.
+    /// The inverse of [`RelativeEq::relative_eq`].
     fn relative_ne(
         &self,
         other: &Rhs,

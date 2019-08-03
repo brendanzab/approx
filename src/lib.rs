@@ -16,8 +16,8 @@
 //! based types, using either relative difference, or units in the last place (ULPs)
 //! comparisons.
 //!
-//! You can also use the `approx_{eq, ne}!` `assert_approx_{eq, ne}!` macros to test for equality
-//! using a more positional style.
+//! You can also use the `*_{eq, ne}!` and `assert_*_{eq, ne}!` macros to test for equality using a
+//! more positional style:
 //!
 //! ```rust
 //! #[macro_use]
@@ -45,7 +45,7 @@
 //!
 //! # Implementing approximate equality for custom types
 //!
-//! The `ApproxEq` trait allows approximate equalities to be implemented on types, based on the
+//! The `*Eq` traits allow approximate equalities to be implemented on types, based on the
 //! fundamental floating point implementations.
 //!
 //! For example, we might want to be able to do approximate assertions on a complex number type:
@@ -92,9 +92,9 @@
 //! # }
 //! ```
 //!
-//! To do this we can implement `AbsDiffEq`, `RelativeEq` and `UlpsEq` generically in terms of a
-//! type parameter that also implements `ApproxEq`, `RelativeEq` and `UlpsEq` respectively. This
-//! means that we can make comparisons for either `Complex<f32>` or `Complex<f64>`:
+//! To do this we can implement [`AbsDiffEq`], [`RelativeEq`] and [`UlpsEq`] generically in terms
+//! of a type parameter that also implements `AbsDiffEq`, `RelativeEq` and `UlpsEq` respectively.
+//! This means that we can make comparisons for either `Complex<f32>` or `Complex<f64>`:
 //!
 //! ```rust
 //! # use approx::{AbsDiffEq, RelativeEq, UlpsEq};
@@ -148,11 +148,11 @@
 //! Floating point is hard! Thanks goes to these links for helping to make things a _little_
 //! easier to understand:
 //!
-//! - [Comparing Floating Point Numbers, 2012 Edition]
-//!   (https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/)
+//! - [Comparing Floating Point Numbers, 2012 Edition](
+//!   https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/)
 //! - [The Floating Point Guide - Comparison](http://floating-point-gui.de/errors/comparison/)
-//! - [What Every Computer Scientist Should Know About Floating-Point Arithmetic]
-//!   (https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html)
+//! - [What Every Computer Scientist Should Know About Floating-Point Arithmetic](
+//!   https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html)
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
