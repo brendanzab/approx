@@ -223,12 +223,14 @@ where
 
     /// Peform the equality comparison
     #[inline]
+    #[must_use]
     pub fn eq(self, lhs: &A, rhs: &B) -> bool {
         A::abs_diff_eq(lhs, rhs, self.epsilon)
     }
 
     /// Peform the inequality comparison
     #[inline]
+    #[must_use]
     pub fn ne(self, lhs: &A, rhs: &B) -> bool {
         A::abs_diff_ne(lhs, rhs, self.epsilon)
     }
@@ -299,12 +301,14 @@ where
 
     /// Peform the equality comparison
     #[inline]
+    #[must_use]
     pub fn eq(self, lhs: &A, rhs: &B) -> bool {
         A::relative_eq(lhs, rhs, self.epsilon, self.max_relative)
     }
 
     /// Peform the inequality comparison
     #[inline]
+    #[must_use]
     pub fn ne(self, lhs: &A, rhs: &B) -> bool {
         A::relative_ne(lhs, rhs, self.epsilon, self.max_relative)
     }
@@ -372,12 +376,14 @@ where
 
     /// Peform the equality comparison
     #[inline]
+    #[must_use]
     pub fn eq(self, lhs: &A, rhs: &B) -> bool {
         A::ulps_eq(lhs, rhs, self.epsilon, self.max_ulps)
     }
 
     /// Peform the inequality comparison
     #[inline]
+    #[must_use]
     pub fn ne(self, lhs: &A, rhs: &B) -> bool {
         A::ulps_ne(lhs, rhs, self.epsilon, self.max_ulps)
     }
