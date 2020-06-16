@@ -1,7 +1,7 @@
 language: rust
 
 rust:
-  - 1.20.0
+  - 1.27.2
   - nightly
   - beta
   - stable
@@ -18,7 +18,7 @@ matrix:
     - rust: nightly
 
 before_script:
-  - if [ "$TRAVIS_RUST_VERSION" == "1.20.0" ]; then rm -f tests/macro_import.rs; fi
+  - if [ "$TRAVIS_RUST_VERSION" == "1.27.2" ]; then rm -f tests/macro_import.rs; fi
   - cargo build --verbose
 
 script:
