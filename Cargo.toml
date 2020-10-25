@@ -1,6 +1,6 @@
 [package]
 name = "approx"
-version = "0.3.2"
+version = "0.4.0"
 authors = ["Brendan Zabarauskas <bjzaba@yahoo.com.au>"]
 license = "Apache-2.0"
 description = "Approximate floating point equality comparisons and assertions."
