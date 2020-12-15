@@ -2,7 +2,7 @@
 use num_complex::Complex;
 #[cfg(not(feature = "std"))]
 use num_traits::float::FloatCore;
-use std::{cell, mem};
+use std::cell;
 
 use AbsDiffEq;
 
@@ -53,17 +53,23 @@ macro_rules! impl_ulps_eq {
                 }
 
                 // ULPS difference comparison
-                let int_self: $U = unsafe { mem::transmute(*self) };
-                let int_other: $U = unsafe { mem::transmute(*other) };
+                let int_self: $U = self.to_bits();
+                let int_other: $U = other.to_bits();
 
-                $U::abs(int_self - int_other) <= max_ulps as $U
+                // To be replaced with `abs_sub`, if
+                // https://github.com/rust-lang/rust/issues/62111 lands.
+                if int_self <= int_other {
+                    int_other - int_self <= max_ulps as $U
+                } else {
+                    int_self - int_other <= max_ulps as $U
+                }
             }
         }
     };
 }
 
-impl_ulps_eq!(f32, i32);
-impl_ulps_eq!(f64, i64);
+impl_ulps_eq!(f32, u32);
+impl_ulps_eq!(f64, u64);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Derived implementations
