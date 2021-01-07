@@ -25,7 +25,8 @@ features = ["std", "num-complex"]
 name = "approx"
 
 [features]
-default = []
+default = ["std"]
+std = []
 
 [dependencies]
 num-traits = { version = "0.2.0", default_features = false }
