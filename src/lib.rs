@@ -23,7 +23,7 @@
 //! #[macro_use]
 //! extern crate approx;
 //!
-//! use core::f64;
+//! use std::f64;
 //!
 //! # fn main() {
 //! abs_diff_eq!(1.0, 1.0);
@@ -180,7 +180,7 @@ pub use ulps_eq::UlpsEq;
 /// # Example
 ///
 /// ```rust
-/// use core::f64;
+/// use std::f64;
 /// use approx::AbsDiff;
 ///
 /// AbsDiff::default().eq(&1.0, &1.0);
@@ -243,7 +243,7 @@ where
 /// # Example
 ///
 /// ```rust
-/// use core::f64;
+/// use std::f64;
 /// use approx::Relative;
 ///
 /// Relative::default().eq(&1.0, &1.0);
@@ -321,7 +321,7 @@ where
 /// # Example
 ///
 /// ```rust
-/// use core::f64;
+/// use std::f64;
 /// use approx::Ulps;
 ///
 /// Ulps::default().eq(&1.0, &1.0);
