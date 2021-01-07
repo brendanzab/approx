@@ -1,8 +1,7 @@
+use core::{cell, mem};
 #[cfg(feature = "num-complex")]
 use num_complex::Complex;
-#[cfg(not(feature = "std"))]
-use num_traits::float::FloatCore;
-use std::{cell, mem};
+use num_traits::Signed;
 
 use AbsDiffEq;
 
@@ -131,7 +130,7 @@ where
     fn ulps_eq(&self, other: &[B], epsilon: A::Epsilon, max_ulps: u32) -> bool {
         self.len() == other.len()
             && Iterator::zip(self.iter(), other)
-                .all(|(x, y)| A::ulps_eq(x, y, epsilon.clone(), max_ulps.clone()))
+                .all(|(x, y)| A::ulps_eq(x, y, epsilon.clone(), max_ulps))
     }
 }
 
@@ -148,6 +147,6 @@ where
     #[inline]
     fn ulps_eq(&self, other: &Complex<T>, epsilon: T::Epsilon, max_ulps: u32) -> bool {
         T::ulps_eq(&self.re, &other.re, epsilon.clone(), max_ulps)
-            && T::ulps_eq(&self.im, &other.im, epsilon.clone(), max_ulps)
+            && T::ulps_eq(&self.im, &other.im, epsilon, max_ulps)
     }
 }

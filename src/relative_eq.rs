@@ -1,9 +1,6 @@
+use core::{cell, f32, f64};
 #[cfg(feature = "num-complex")]
 use num_complex::Complex;
-#[cfg(not(feature = "std"))]
-use num_traits::float::FloatCore;
-use std::{cell, f32, f64};
-
 use AbsDiffEq;
 
 /// Equality comparisons between two numbers using both the absolute difference and
@@ -18,12 +15,8 @@ where
     fn default_max_relative() -> Self::Epsilon;
 
     /// A test for equality that uses a relative comparison if the values are far apart.
-    fn relative_eq(
-        &self,
-        other: &Rhs,
-        epsilon: Self::Epsilon,
-        max_relative: Self::Epsilon,
-    ) -> bool;
+    fn relative_eq(&self, other: &Rhs, epsilon: Self::Epsilon, max_relative: Self::Epsilon)
+        -> bool;
 
     /// The inverse of [`RelativeEq::relative_eq`].
     fn relative_ne(
@@ -51,7 +44,9 @@ macro_rules! impl_relative_eq {
             }
 
             #[inline]
+            #[allow(unused_imports)]
             fn relative_eq(&self, other: &$T, epsilon: $T, max_relative: $T) -> bool {
+                use num_traits::float::FloatCore;
                 // Handle same infinities
                 if self == other {
                     return true;
@@ -191,6 +186,6 @@ where
         max_relative: T::Epsilon,
     ) -> bool {
         T::relative_eq(&self.re, &other.re, epsilon.clone(), max_relative.clone())
-            && T::relative_eq(&self.im, &other.im, epsilon.clone(), max_relative.clone())
+            && T::relative_eq(&self.im, &other.im, epsilon, max_relative)
     }
 }

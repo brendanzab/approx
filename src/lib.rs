@@ -23,7 +23,7 @@
 //! #[macro_use]
 //! extern crate approx;
 //!
-//! use std::f64;
+//! use core::f64;
 //!
 //! # fn main() {
 //! abs_diff_eq!(1.0, 1.0);
@@ -154,14 +154,12 @@
 //! - [What Every Computer Scientist Should Know About Floating-Point Arithmetic](
 //!   https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html)
 
-#![cfg_attr(not(feature = "std"), no_std)]
+#![no_std]
+#![allow(clippy::transmute_float_to_int)]
 
 #[cfg(feature = "num-complex")]
 extern crate num_complex;
 extern crate num_traits;
-
-#[cfg(not(feature = "std"))]
-use core as std;
 
 mod abs_diff_eq;
 mod relative_eq;
@@ -182,7 +180,7 @@ pub use ulps_eq::UlpsEq;
 /// # Example
 ///
 /// ```rust
-/// use std::f64;
+/// use core::f64;
 /// use approx::AbsDiff;
 ///
 /// AbsDiff::default().eq(&1.0, &1.0);
@@ -218,7 +216,7 @@ where
     /// Replace the epsilon value with the one specified.
     #[inline]
     pub fn epsilon(self, epsilon: A::Epsilon) -> AbsDiff<A, B> {
-        AbsDiff { epsilon, ..self }
+        AbsDiff { epsilon }
     }
 
     /// Peform the equality comparison
@@ -245,7 +243,7 @@ where
 /// # Example
 ///
 /// ```rust
-/// use std::f64;
+/// use core::f64;
 /// use approx::Relative;
 ///
 /// Relative::default().eq(&1.0, &1.0);
@@ -323,7 +321,7 @@ where
 /// # Example
 ///
 /// ```rust
-/// use std::f64;
+/// use core::f64;
 /// use approx::Ulps;
 ///
 /// Ulps::default().eq(&1.0, &1.0);
