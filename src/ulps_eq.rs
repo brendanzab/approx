@@ -135,6 +135,7 @@ where
     }
 }
 
+#[cfg(feature = "array_impl")]
 impl<A, B, const N: usize> UlpsEq<[B; N]> for [A; N]
 where
     A: UlpsEq<B>,
