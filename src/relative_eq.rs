@@ -173,6 +173,22 @@ where
     }
 }
 
+impl<A, B> RelativeEq<Vec<B>> for Vec<A>
+    where
+        A: RelativeEq<B>,
+        A::Epsilon: Clone,
+{
+    #[inline]
+    fn default_max_relative() -> A::Epsilon {
+        A::default_max_relative()
+    }
+
+    #[inline]
+    fn relative_eq(&self, other: &Vec<B>, epsilon: A::Epsilon, max_relative: A::Epsilon) -> bool {
+        self.as_slice().relative_eq(other.as_slice(), epsilon, max_relative)
+    }
+}
+
 #[cfg(feature = "num-complex")]
 impl<T: RelativeEq> RelativeEq for Complex<T>
 where

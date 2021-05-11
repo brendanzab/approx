@@ -135,6 +135,22 @@ where
     }
 }
 
+impl<A, B> UlpsEq<Vec<B>> for Vec<A>
+    where
+        A: UlpsEq<B>,
+        A::Epsilon: Clone,
+{
+    #[inline]
+    fn default_max_ulps() -> u32 {
+        A::default_max_ulps()
+    }
+
+    #[inline]
+    fn ulps_eq(&self, other: &Vec<B>, epsilon: A::Epsilon, max_ulps: u32) -> bool {
+        self.as_slice().ulps_eq(other.as_slice(), epsilon, max_ulps)
+    }
+}
+
 #[cfg(feature = "num-complex")]
 impl<T: UlpsEq> UlpsEq for Complex<T>
 where
