@@ -218,7 +218,7 @@ where
     /// Replace the epsilon value with the one specified.
     #[inline]
     pub fn epsilon(self, epsilon: A::Epsilon) -> AbsDiff<A, B> {
-        AbsDiff { epsilon, ..self }
+        AbsDiff { epsilon }
     }
 
     /// Peform the equality comparison
