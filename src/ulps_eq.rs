@@ -131,7 +131,7 @@ where
     fn ulps_eq(&self, other: &[B], epsilon: A::Epsilon, max_ulps: u32) -> bool {
         self.len() == other.len()
             && Iterator::zip(self.iter(), other)
-                .all(|(x, y)| A::ulps_eq(x, y, epsilon.clone(), max_ulps.clone()))
+                .all(|(x, y)| A::ulps_eq(x, y, epsilon.clone(), max_ulps))
     }
 }
 
