@@ -18,12 +18,8 @@ where
     fn default_max_relative() -> Self::Epsilon;
 
     /// A test for equality that uses a relative comparison if the values are far apart.
-    fn relative_eq(
-        &self,
-        other: &Rhs,
-        epsilon: Self::Epsilon,
-        max_relative: Self::Epsilon,
-    ) -> bool;
+    fn relative_eq(&self, other: &Rhs, epsilon: Self::Epsilon, max_relative: Self::Epsilon)
+        -> bool;
 
     /// The inverse of [`RelativeEq::relative_eq`].
     fn relative_ne(
