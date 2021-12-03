@@ -96,3 +96,10 @@ fn test_ulps_ne_trailing_commas() {
     let _: bool = ulps_ne!(1.0, 1.0,);
     let _: bool = ulps_ne!(1.0, 1.0, epsilon = 1.0, max_ulps = 1,);
 }
+
+#[test]
+fn test_rvalue_arguments() {
+    assert_abs_diff_eq!(vec![0.0].as_slice(), vec![0.0].as_slice());
+    assert_relative_eq!(vec![0.0].as_slice(), vec![0.0].as_slice());
+    assert_ulps_eq!(vec![0.0].as_slice(), vec![0.0].as_slice());
+}
