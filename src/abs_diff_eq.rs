@@ -1,8 +1,6 @@
+use core::cell;
 #[cfg(feature = "num-complex")]
 use num_complex::Complex;
-#[cfg(not(feature = "std"))]
-use num_traits::float::FloatCore;
-use std::{cell, f32, f64};
 
 /// Equality that is defined using the absolute difference of two numbers.
 pub trait AbsDiffEq<Rhs = Self>: PartialEq<Rhs>
@@ -71,7 +69,9 @@ macro_rules! impl_signed_abs_diff_eq {
             }
 
             #[inline]
+            #[allow(unused_imports)]
             fn abs_diff_eq(&self, other: &$T, epsilon: $T) -> bool {
+                use num_traits::float::FloatCore;
                 $T::abs(self - other) <= epsilon
             }
         }
@@ -83,8 +83,8 @@ impl_signed_abs_diff_eq!(i16, 0);
 impl_signed_abs_diff_eq!(i32, 0);
 impl_signed_abs_diff_eq!(i64, 0);
 impl_signed_abs_diff_eq!(isize, 0);
-impl_signed_abs_diff_eq!(f32, f32::EPSILON);
-impl_signed_abs_diff_eq!(f64, f64::EPSILON);
+impl_signed_abs_diff_eq!(f32, core::f32::EPSILON);
+impl_signed_abs_diff_eq!(f64, core::f64::EPSILON);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Derived implementations
@@ -180,6 +180,6 @@ where
     #[inline]
     fn abs_diff_eq(&self, other: &Complex<T>, epsilon: T::Epsilon) -> bool {
         T::abs_diff_eq(&self.re, &other.re, epsilon.clone())
-            && T::abs_diff_eq(&self.im, &other.im, epsilon.clone())
+            && T::abs_diff_eq(&self.im, &other.im, epsilon)
     }
 }

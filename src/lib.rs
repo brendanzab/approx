@@ -154,14 +154,12 @@
 //! - [What Every Computer Scientist Should Know About Floating-Point Arithmetic](
 //!   https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html)
 
-#![cfg_attr(not(feature = "std"), no_std)]
+#![no_std]
+#![allow(clippy::transmute_float_to_int)]
 
 #[cfg(feature = "num-complex")]
 extern crate num_complex;
 extern crate num_traits;
-
-#[cfg(not(feature = "std"))]
-use core as std;
 
 mod abs_diff_eq;
 mod relative_eq;
