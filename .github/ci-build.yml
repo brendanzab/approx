@@ -1,0 +1,43 @@
+name: Approx CI build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check-fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Check formatting
+        run: cargo fmt -- --check
+  build-native:
+    runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: -D warnings
+    steps:
+      - name: Build approx
+        run: cargo build;
+      - name: Run tests
+        run: cargo test;
+  build-no-std:
+    runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: -D warnings
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install latest nightly
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+          components: rustfmt
+      - name: install xargo
+        run: cp .github/Xargo.toml .; rustup component add rust-src; cargo install -f xargo;
+      - name: build x86_64-unknown-linux-gnu
+        run: xargo build --verbose --no-default-features --target=x86_64-unknown-linux-gnu;
