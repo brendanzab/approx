@@ -14,12 +14,13 @@
 
 // Test cases derived from:
 // https://github.com/Pybonacci/puntoflotante.org/blob/master/content/errors/NearlyEqualsTest.java
+#![no_std]
 
 #[macro_use]
 extern crate approx;
 
 mod test_f32 {
-    use std::f32;
+    use core::f32;
 
     #[test]
     fn test_basic() {
@@ -190,7 +191,7 @@ mod test_f32 {
 
 #[cfg(test)]
 mod test_f64 {
-    use std::f64;
+    use core::f64;
 
     #[test]
     fn test_basic() {
