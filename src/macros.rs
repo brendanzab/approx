@@ -82,37 +82,39 @@ macro_rules! ulps_ne {
 #[macro_export]
 macro_rules! __assert_approx {
     ($eq:ident, $given:expr, $expected:expr) => {{
-        let (given, expected) = (&($given), &($expected));
-
-        assert!($eq!(*given, *expected),
+        match (&($given), &($expected)) {
+            (given, expected) => assert!(
+                $eq!(*given, *expected),
 "assert_{}!({}, {})
 
     left  = {:?}
     right = {:?}
 
 ",
-            stringify!($eq),
-            stringify!($given),
-            stringify!($expected),
-            given, expected,
-        );
+                stringify!($eq),
+                stringify!($given),
+                stringify!($expected),
+                given, expected,
+            ),
+        }
     }};
     ($eq:ident, $given:expr, $expected:expr, $($opt:ident = $val:expr),+) => {{
-        let (given, expected) = (&($given), &($expected));
-
-        assert!($eq!(*given, *expected, $($opt = $val),+),
+        match (&($given), &($expected)) {
+            (given, expected) => assert!(
+                $eq!(*given, *expected, $($opt = $val),+),
 "assert_{}!({}, {}, {})
 
     left  = {:?}
     right = {:?}
 
 ",
-            stringify!($eq),
-            stringify!($given),
-            stringify!($expected),
-            stringify!($($opt = $val),+),
-            given, expected,
-        );
+                stringify!($eq),
+                stringify!($given),
+                stringify!($expected),
+                stringify!($($opt = $val),+),
+                given, expected,
+            ),
+        }
     }};
 }
 
