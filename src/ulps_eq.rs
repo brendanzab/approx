@@ -1,7 +1,7 @@
-use core::{cell, mem};
+use core::cell;
 #[cfg(feature = "num-complex")]
 use num_complex::Complex;
-use num_traits::{float::FloatCore, Signed};
+use num_traits::Signed;
 
 use AbsDiffEq;
 
