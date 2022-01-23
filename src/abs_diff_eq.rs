@@ -165,6 +165,24 @@ where
     }
 }
 
+impl<A, B> AbsDiffEq<Vec<B>> for Vec<A>
+    where
+        A: AbsDiffEq<B>,
+        A::Epsilon: Clone,
+{
+    type Epsilon = A::Epsilon;
+
+    #[inline]
+    fn default_epsilon() -> A::Epsilon {
+        A::default_epsilon()
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &Vec<B>, epsilon: A::Epsilon) -> bool {
+        self.as_slice().abs_diff_eq(other.as_slice(), epsilon)
+    }
+}
+
 #[cfg(feature = "num-complex")]
 impl<T: AbsDiffEq> AbsDiffEq for Complex<T>
 where

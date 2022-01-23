@@ -392,6 +392,24 @@ mod test_slice {
     }
 }
 
+mod test_vec {
+    mod test_f32 {
+        #[test]
+        fn test_basic() {
+            assert_abs_diff_eq!(vec![1.0f32, 2.0f32], vec![1.0f32, 2.0f32]);
+            assert_abs_diff_ne!(vec![1.0f32, 2.0f32], vec![2.0f32, 1.0f32]);
+        }
+    }
+
+    mod test_f64 {
+        #[test]
+        fn test_basic() {
+            assert_abs_diff_eq!(vec![1.0f64, 2.0f64], vec![1.0f64, 2.0f64]);
+            assert_abs_diff_ne!(vec![1.0f64, 2.0f64], vec![2.0f64, 1.0f64]);
+        }
+    }
+}
+
 #[cfg(feature = "num-complex")]
 mod test_complex {
     extern crate num_complex;
