@@ -27,7 +27,7 @@ jobs:
       - run: cargo build --features num-complex;
       - name: Run tests
         run: cargo test;
-  build-1.31.0:
+  build-1-31-0:
     runs-on: ubuntu-latest
     env:
       RUSTFLAGS: -D warnings
