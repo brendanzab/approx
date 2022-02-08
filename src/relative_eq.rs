@@ -87,6 +87,48 @@ impl_relative_eq!(f64, i64);
 // Derived implementations
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+impl<T: RelativeEq> RelativeEq for Option<T> {
+    #[inline]
+    fn default_max_relative() -> T::Epsilon {
+        T::default_max_relative()
+    }
+
+    #[inline]
+    fn relative_eq(
+        &self,
+        other: &Option<T>,
+        epsilon: T::Epsilon,
+        max_relative: T::Epsilon,
+    ) -> bool {
+        match (self, other) {
+            (Some(a), Some(b)) => T::relative_eq(a, b, epsilon, max_relative),
+            (None, None) => true,
+            _ => false,
+        }
+    }
+}
+
+impl<T: RelativeEq, E: RelativeEq> RelativeEq for Result<T, E> {
+    #[inline]
+    fn default_max_relative() -> (T::Epsilon, E::Epsilon) {
+        (T::default_max_relative(), E::default_max_relative())
+    }
+
+    #[inline]
+    fn relative_eq(
+        &self,
+        other: &Result<T, E>,
+        epsilon: (T::Epsilon, E::Epsilon),
+        max_relative: (T::Epsilon, E::Epsilon),
+    ) -> bool {
+        match (self, other) {
+            (Ok(a), Ok(b)) => T::relative_eq(a, b, epsilon.0, max_relative.0),
+            (Err(a), Err(b)) => E::relative_eq(a, b, epsilon.1, max_relative.1),
+            _ => false,
+        }
+    }
+}
+
 impl<'a, T: RelativeEq + ?Sized> RelativeEq for &'a T {
     #[inline]
     fn default_max_relative() -> T::Epsilon {

@@ -90,6 +90,42 @@ impl_signed_abs_diff_eq!(f64, core::f64::EPSILON);
 // Derived implementations
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+impl<T: AbsDiffEq> AbsDiffEq for Option<T> {
+    type Epsilon = T::Epsilon;
+
+    #[inline]
+    fn default_epsilon() -> T::Epsilon {
+        T::default_epsilon()
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &Option<T>, epsilon: T::Epsilon) -> bool {
+        match (self, other) {
+            (Some(a), Some(b)) => T::abs_diff_eq(a, b, epsilon),
+            (None, None) => true,
+            _ => false,
+        }
+    }
+}
+
+impl<T: AbsDiffEq, E: AbsDiffEq> AbsDiffEq for Result<T, E> {
+    type Epsilon = (T::Epsilon, E::Epsilon);
+
+    #[inline]
+    fn default_epsilon() -> (T::Epsilon, E::Epsilon) {
+        (T::default_epsilon(), E::default_epsilon())
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &Result<T, E>, epsilon: (T::Epsilon, E::Epsilon)) -> bool {
+        match (self, other) {
+            (Ok(a), Ok(b)) => T::abs_diff_eq(a, b, epsilon.0),
+            (Err(a), Err(b)) => E::abs_diff_eq(a, b, epsilon.1),
+            _ => false,
+        }
+    }
+}
+
 impl<'a, T: AbsDiffEq + ?Sized> AbsDiffEq for &'a T {
     type Epsilon = T::Epsilon;
 

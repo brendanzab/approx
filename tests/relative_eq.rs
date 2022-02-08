@@ -354,6 +354,54 @@ mod test_f64 {
     }
 }
 
+mod test_option {
+    mod test_f32 {
+        #[test]
+        fn test_basic() {
+            assert_relative_eq!(Some(1.0f32), Some(1.0f32));
+
+            assert_relative_ne!(Some(1.0f32), Some(2.0f32));
+            assert_relative_ne!(Some(1.0f32), None);
+        }
+    }
+
+    mod test_f64 {
+        #[test]
+        fn test_basic() {
+            assert_relative_eq!(Some(1.0f64), Some(1.0f64));
+
+            assert_relative_ne!(Some(1.0f64), Some(2.0f64));
+            assert_relative_ne!(Some(1.0f64), None);
+        }
+    }
+}
+
+mod test_result {
+    mod test_f32 {
+        #[test]
+        fn test_basic() {
+            assert_relative_eq!(Ok::<f32, f32>(1.0f32), Ok(1.0f32));
+            assert_relative_eq!(Err::<f32, f32>(1.0f32), Err(1.0f32));
+
+            assert_relative_ne!(Ok::<f32, f32>(1.0f32), Ok(2.0f32));
+            assert_relative_ne!(Ok::<f32, f32>(1.0f32), Err(1.0f32));
+            assert_relative_ne!(Err::<f32, f32>(1.0f32), Err(2.0f32));
+        }
+    }
+
+    mod test_f64 {
+        #[test]
+        fn test_basic() {
+            assert_relative_eq!(Ok::<f64, f64>(1.0f64), Ok(1.0f64));
+            assert_relative_eq!(Err::<f64, f64>(1.0f64), Err(1.0f64));
+
+            assert_relative_ne!(Ok::<f64, f64>(1.0f64), Ok(2.0f64));
+            assert_relative_ne!(Ok::<f64, f64>(1.0f64), Err(1.0f64));
+            assert_relative_ne!(Err::<f64, f64>(1.0f64), Err(2.0f64));
+        }
+    }
+}
+
 mod test_ref {
     mod test_f32 {
         #[test]

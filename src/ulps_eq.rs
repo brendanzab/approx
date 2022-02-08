@@ -74,6 +74,43 @@ impl_ulps_eq!(f64, u64);
 // Derived implementations
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+impl<T: UlpsEq> UlpsEq for Option<T> {
+    #[inline]
+    fn default_max_ulps() -> u32 {
+        T::default_max_ulps()
+    }
+
+    #[inline]
+    fn ulps_eq(&self, other: &Option<T>, epsilon: T::Epsilon, max_ulps: u32) -> bool {
+        match (self, other) {
+            (Some(a), Some(b)) => T::ulps_eq(a, b, epsilon, max_ulps),
+            (None, None) => true,
+            _ => false,
+        }
+    }
+}
+
+impl<T: UlpsEq, E: UlpsEq> UlpsEq for Result<T, E> {
+    #[inline]
+    fn default_max_ulps() -> u32 {
+        T::default_max_ulps().max(E::default_max_ulps())
+    }
+
+    #[inline]
+    fn ulps_eq(
+        &self,
+        other: &Result<T, E>,
+        epsilon: (T::Epsilon, E::Epsilon),
+        max_ulps: u32,
+    ) -> bool {
+        match (self, other) {
+            (Ok(a), Ok(b)) => T::ulps_eq(a, b, epsilon.0, max_ulps),
+            (Err(a), Err(b)) => E::ulps_eq(a, b, epsilon.1, max_ulps),
+            _ => false,
+        }
+    }
+}
+
 impl<'a, T: UlpsEq + ?Sized> UlpsEq for &'a T {
     #[inline]
     fn default_max_ulps() -> u32 {
