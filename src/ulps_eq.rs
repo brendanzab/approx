@@ -140,6 +140,25 @@ where
     }
 }
 
+#[cfg(feature = "array_impl")]
+impl<A, B, const N: usize> UlpsEq<[B; N]> for [A; N]
+where
+    A: UlpsEq<B>,
+    A::Epsilon: Clone,
+{
+    #[inline]
+    fn default_max_ulps() -> u32 {
+        A::default_max_ulps()
+    }
+
+    #[inline]
+    fn ulps_eq(&self, other: &[B; N], epsilon: A::Epsilon, max_ulps: u32) -> bool {
+        self.len() == other.len()
+            && Iterator::zip(self.iter(), other)
+                .all(|(x, y)| A::ulps_eq(x, y, epsilon.clone(), max_ulps.clone()))
+    }
+}
+
 #[cfg(feature = "num-complex")]
 impl<T: UlpsEq> UlpsEq for Complex<T>
 where

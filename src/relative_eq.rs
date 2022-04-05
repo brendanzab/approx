@@ -168,6 +168,25 @@ where
     }
 }
 
+#[cfg(feature = "array_impl")]
+impl<A, B, const N: usize> RelativeEq<[B; N]> for [A; N]
+where
+    A: RelativeEq<B>,
+    A::Epsilon: Clone,
+{
+    #[inline]
+    fn default_max_relative() -> A::Epsilon {
+        A::default_max_relative()
+    }
+
+    #[inline]
+    fn relative_eq(&self, other: &[B; N], epsilon: A::Epsilon, max_relative: A::Epsilon) -> bool {
+        self.len() == other.len()
+            && Iterator::zip(self.iter(), other)
+                .all(|(x, y)| A::relative_eq(x, y, epsilon.clone(), max_relative.clone()))
+    }
+}
+
 #[cfg(feature = "num-complex")]
 impl<T: RelativeEq> RelativeEq for Complex<T>
 where

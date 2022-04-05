@@ -165,6 +165,26 @@ where
     }
 }
 
+#[cfg(feature = "array_impl")]
+impl<A, B, const N: usize> AbsDiffEq<[B; N]> for [A; N]
+where
+    A: AbsDiffEq<B>,
+    A::Epsilon: Clone,
+{
+    type Epsilon = A::Epsilon;
+
+    #[inline]
+    fn default_epsilon() -> A::Epsilon {
+        A::default_epsilon()
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &[B; N], epsilon: A::Epsilon) -> bool {
+        self.len() == other.len()
+            && Iterator::zip(self.iter(), other).all(|(x, y)| A::abs_diff_eq(x, y, epsilon.clone()))
+    }
+}
+
 #[cfg(feature = "num-complex")]
 impl<T: AbsDiffEq> AbsDiffEq for Complex<T>
 where

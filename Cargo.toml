@@ -19,7 +19,7 @@ keywords = [
 ]
 
 [package.metadata.docs.rs]
-features = ["std", "num-complex"]
+features = ["std", "num-complex", "array_impl"]
 
 [lib]
 name = "approx"
@@ -27,6 +27,7 @@ name = "approx"
 [features]
 default = ["std"]
 std = []
+array_impl = []
 
 [dependencies]
 num-traits = { version = "0.2.0", default_features = false }
