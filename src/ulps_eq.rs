@@ -1,6 +1,10 @@
 use core::cell;
 #[cfg(feature = "num-complex")]
 use num_complex::Complex;
+#[cfg(feature = "ordered-float")]
+use ordered_float::{NotNan, OrderedFloat};
+#[cfg(feature = "ordered-float")]
+use num_traits::Float;
 use num_traits::Signed;
 
 use AbsDiffEq;
@@ -154,5 +158,31 @@ where
     fn ulps_eq(&self, other: &Complex<T>, epsilon: T::Epsilon, max_ulps: u32) -> bool {
         T::ulps_eq(&self.re, &other.re, epsilon.clone(), max_ulps)
             && T::ulps_eq(&self.im, &other.im, epsilon, max_ulps)
+    }
+}
+
+#[cfg(feature = "ordered-float")]
+impl<T: UlpsEq + Copy> UlpsEq for NotNan<T> {
+    #[inline]
+    fn default_max_ulps() -> u32 {
+        T::default_max_ulps()
+    }
+
+    #[inline]
+    fn ulps_eq(&self, other: &NotNan<T>, epsilon: T::Epsilon, max_ulps: u32) -> bool {
+        T::ulps_eq(&self.into_inner(), &other.into_inner(), epsilon, max_ulps)
+    }
+}
+
+#[cfg(feature = "ordered-float")]
+impl<T: UlpsEq + Float> UlpsEq for OrderedFloat<T> {
+    #[inline]
+    fn default_max_ulps() -> u32 {
+        T::default_max_ulps()
+    }
+
+    #[inline]
+    fn ulps_eq(&self, other: &OrderedFloat<T>, epsilon: T::Epsilon, max_ulps: u32) -> bool {
+        T::ulps_eq(&self.into_inner(), &other.into_inner(), epsilon, max_ulps)
     }
 }
