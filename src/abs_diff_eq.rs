@@ -2,9 +2,9 @@ use core::cell;
 #[cfg(feature = "num-complex")]
 use num_complex::Complex;
 #[cfg(feature = "ordered-float")]
-use ordered_float::{NotNan, OrderedFloat};
-#[cfg(feature = "ordered-float")]
 use num_traits::Float;
+#[cfg(feature = "ordered-float")]
+use ordered_float::{NotNan, OrderedFloat};
 
 /// Equality that is defined using the absolute difference of two numbers.
 pub trait AbsDiffEq<Rhs = Self>: PartialEq<Rhs>
@@ -204,6 +204,21 @@ impl<T: AbsDiffEq + Copy> AbsDiffEq for NotNan<T> {
 }
 
 #[cfg(feature = "ordered-float")]
+impl<T: AbsDiffEq + Float> AbsDiffEq<T> for NotNan<T> {
+    type Epsilon = T::Epsilon;
+
+    #[inline]
+    fn default_epsilon() -> Self::Epsilon {
+        T::default_epsilon()
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &T, epsilon: Self::Epsilon) -> bool {
+        T::abs_diff_eq(&self.into_inner(), other, epsilon)
+    }
+}
+
+#[cfg(feature = "ordered-float")]
 impl<T: AbsDiffEq + Float> AbsDiffEq for OrderedFloat<T> {
     type Epsilon = T::Epsilon;
 
@@ -215,5 +230,20 @@ impl<T: AbsDiffEq + Float> AbsDiffEq for OrderedFloat<T> {
     #[inline]
     fn abs_diff_eq(&self, other: &Self, epsilon: Self::Epsilon) -> bool {
         T::abs_diff_eq(&self.into_inner(), &other.into_inner(), epsilon)
+    }
+}
+
+#[cfg(feature = "ordered-float")]
+impl<T: AbsDiffEq + Float> AbsDiffEq<T> for OrderedFloat<T> {
+    type Epsilon = T::Epsilon;
+
+    #[inline]
+    fn default_epsilon() -> Self::Epsilon {
+        T::default_epsilon()
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &T, epsilon: Self::Epsilon) -> bool {
+        T::abs_diff_eq(&self.into_inner(), other, epsilon)
     }
 }

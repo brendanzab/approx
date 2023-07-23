@@ -2,9 +2,9 @@ use core::{cell, f32, f64};
 #[cfg(feature = "num-complex")]
 use num_complex::Complex;
 #[cfg(feature = "ordered-float")]
-use ordered_float::{NotNan, OrderedFloat};
-#[cfg(feature = "ordered-float")]
 use num_traits::Float;
+#[cfg(feature = "ordered-float")]
+use ordered_float::{NotNan, OrderedFloat};
 use AbsDiffEq;
 
 /// Equality comparisons between two numbers using both the absolute difference and
@@ -202,9 +202,31 @@ impl<T: RelativeEq + Copy> RelativeEq for NotNan<T> {
     }
 
     #[inline]
-    fn relative_eq(&self, other: &Self, epsilon: Self::Epsilon, max_relative: Self::Epsilon)
-            -> bool {
-        T::relative_eq(&self.into_inner(), &other.into_inner(), epsilon, max_relative)
+    fn relative_eq(
+        &self,
+        other: &Self,
+        epsilon: Self::Epsilon,
+        max_relative: Self::Epsilon,
+    ) -> bool {
+        T::relative_eq(
+            &self.into_inner(),
+            &other.into_inner(),
+            epsilon,
+            max_relative,
+        )
+    }
+}
+
+#[cfg(feature = "ordered-float")]
+impl<T: RelativeEq + Float> RelativeEq<T> for NotNan<T> {
+    #[inline]
+    fn default_max_relative() -> Self::Epsilon {
+        T::default_max_relative()
+    }
+
+    #[inline]
+    fn relative_eq(&self, other: &T, epsilon: Self::Epsilon, max_relative: Self::Epsilon) -> bool {
+        T::relative_eq(&self.into_inner(), other, epsilon, max_relative)
     }
 }
 
@@ -216,8 +238,30 @@ impl<T: RelativeEq + Float> RelativeEq for OrderedFloat<T> {
     }
 
     #[inline]
-    fn relative_eq(&self, other: &Self, epsilon: Self::Epsilon, max_relative: Self::Epsilon)
-            -> bool {
-        T::relative_eq(&self.into_inner(), &other.into_inner(), epsilon, max_relative)
+    fn relative_eq(
+        &self,
+        other: &Self,
+        epsilon: Self::Epsilon,
+        max_relative: Self::Epsilon,
+    ) -> bool {
+        T::relative_eq(
+            &self.into_inner(),
+            &other.into_inner(),
+            epsilon,
+            max_relative,
+        )
+    }
+}
+
+#[cfg(feature = "ordered-float")]
+impl<T: RelativeEq + Float> RelativeEq<T> for OrderedFloat<T> {
+    #[inline]
+    fn default_max_relative() -> Self::Epsilon {
+        T::default_max_relative()
+    }
+
+    #[inline]
+    fn relative_eq(&self, other: &T, epsilon: Self::Epsilon, max_relative: Self::Epsilon) -> bool {
+        T::relative_eq(&self.into_inner(), other, epsilon, max_relative)
     }
 }

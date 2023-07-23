@@ -441,3 +441,61 @@ mod test_complex {
         }
     }
 }
+
+#[cfg(feature = "ordered-float")]
+mod test_ordered_float {
+    extern crate ordered_float;
+    pub use self::ordered_float::{NotNan, OrderedFloat};
+
+    mod test_f32 {
+        use super::OrderedFloat;
+
+        #[test]
+        fn test_basic() {
+            assert_abs_diff_eq!(OrderedFloat(1.0f32), OrderedFloat(1.0f32));
+            assert_abs_diff_ne!(OrderedFloat(1.0f32), OrderedFloat(2.0f32));
+            assert_abs_diff_eq!(OrderedFloat(1.0f32), 1.0f32);
+            assert_abs_diff_ne!(OrderedFloat(1.0f32), 2.0f32);
+            assert_abs_diff_eq!(1.0f32, OrderedFloat(1.0f32));
+            assert_abs_diff_ne!(1.0f32, OrderedFloat(2.0f32));
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_basic_panic_eq() {
+            assert_abs_diff_eq!(OrderedFloat(1.0f32), OrderedFloat(2.0f32));
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_basic_panic_ne() {
+            assert_abs_diff_ne!(OrderedFloat(1.0f32), OrderedFloat(1.0f32));
+        }
+    }
+
+    mod test_f64 {
+        use super::OrderedFloat;
+
+        #[test]
+        fn test_basic() {
+            assert_abs_diff_eq!(OrderedFloat(1.0f64), OrderedFloat(1.0f64));
+            assert_abs_diff_ne!(OrderedFloat(1.0f64), OrderedFloat(2.0f64));
+            assert_abs_diff_eq!(OrderedFloat(1.0f64), 1.0f64);
+            assert_abs_diff_ne!(OrderedFloat(1.0f64), 2.0f64);
+            assert_abs_diff_eq!(1.0f64, OrderedFloat(1.0f64));
+            assert_abs_diff_ne!(1.0f64, OrderedFloat(2.0f64));
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_basic_panic_eq() {
+            assert_abs_diff_eq!(OrderedFloat(1.0f64), OrderedFloat(2.0f64));
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_basic_panic_ne() {
+            assert_abs_diff_ne!(OrderedFloat(1.0f64), OrderedFloat(1.0f64));
+        }
+    }
+}
