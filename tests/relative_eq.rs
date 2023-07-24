@@ -187,6 +187,12 @@ mod test_f32 {
         assert_relative_ne!(f32::MIN_POSITIVE, 0.000001f32);
         assert_relative_ne!(-f32::MIN_POSITIVE, 0.000001f32);
     }
+
+    #[test]
+    fn custom_test() {
+        assert_relative_eq!(1.0f64, 1.5f64, max_relative = 0.34);
+        assert_relative_ne!(1.0f64, 1.5f64, max_relative = 0.33);
+    }
 }
 
 #[cfg(test)]
@@ -351,6 +357,12 @@ mod test_f64 {
         assert_relative_ne!(0.000000000000001f64, f64::MIN_POSITIVE);
         assert_relative_ne!(f64::MIN_POSITIVE, 0.000000000000001f64);
         assert_relative_ne!(-f64::MIN_POSITIVE, 0.000000000000001f64);
+    }
+
+    #[test]
+    fn custom_test() {
+        assert_relative_eq!(1.0f64, 1.5f64, max_relative = 0.34);
+        assert_relative_ne!(1.0f64, 1.5f64, max_relative = 0.33);
     }
 }
 

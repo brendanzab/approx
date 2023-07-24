@@ -7,6 +7,22 @@ use num_traits::Float;
 use ordered_float::{NotNan, OrderedFloat};
 
 /// Equality that is defined using the absolute difference of two numbers.
+/// 
+/// For two numbers `a` and `b`, if `|a - b| < epsilon`, then the two numbers are considered
+/// to be equal under the absolute difference equality.
+/// 
+/// `abs_diff_eq`, `abs_diff_ne`, `assert_abs_diff_eq`, and `assert_abs_diff_ne` macros
+/// are all wrappers of the `abs_diff_eq` function in this trait.
+/// 
+/// # Examples
+/// 
+/// ```
+/// #[macro_use] extern crate approx;
+/// # fn main() {
+/// assert_abs_diff_eq!(1.0f32, 1.00000001f32, epsilon = 1e-8);
+/// assert_abs_diff_ne!(1.0f32, 1.0000001f32, epsilon = 1e-8);
+/// # }
+/// ```
 pub trait AbsDiffEq<Rhs = Self>: PartialEq<Rhs>
 where
     Rhs: ?Sized,
