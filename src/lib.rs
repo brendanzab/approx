@@ -160,6 +160,8 @@
 #[cfg(feature = "num-complex")]
 extern crate num_complex;
 extern crate num_traits;
+#[cfg(feature = "ordered-float")]
+extern crate ordered_float;
 
 mod abs_diff_eq;
 mod relative_eq;

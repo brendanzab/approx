@@ -1,8 +1,28 @@
 use core::cell;
 #[cfg(feature = "num-complex")]
 use num_complex::Complex;
+#[cfg(feature = "ordered-float")]
+use num_traits::Float;
+#[cfg(feature = "ordered-float")]
+use ordered_float::{NotNan, OrderedFloat};
 
 /// Equality that is defined using the absolute difference of two numbers.
+/// 
+/// For two numbers `a` and `b`, if `|a - b| < epsilon`, then the two numbers are considered
+/// to be equal under the absolute difference equality.
+/// 
+/// `abs_diff_eq`, `abs_diff_ne`, `assert_abs_diff_eq`, and `assert_abs_diff_ne` macros
+/// are all wrappers of the `abs_diff_eq` function in this trait.
+/// 
+/// # Examples
+/// 
+/// ```
+/// #[macro_use] extern crate approx;
+/// # fn main() {
+/// assert_abs_diff_eq!(1.0f32, 1.00000001f32, epsilon = 1e-8);
+/// assert_abs_diff_ne!(1.0f32, 1.0000001f32, epsilon = 1e-8);
+/// # }
+/// ```
 pub trait AbsDiffEq<Rhs = Self>: PartialEq<Rhs>
 where
     Rhs: ?Sized,
@@ -181,5 +201,65 @@ where
     fn abs_diff_eq(&self, other: &Complex<T>, epsilon: T::Epsilon) -> bool {
         T::abs_diff_eq(&self.re, &other.re, epsilon.clone())
             && T::abs_diff_eq(&self.im, &other.im, epsilon)
+    }
+}
+
+#[cfg(feature = "ordered-float")]
+impl<T: AbsDiffEq + Copy> AbsDiffEq for NotNan<T> {
+    type Epsilon = T::Epsilon;
+
+    #[inline]
+    fn default_epsilon() -> Self::Epsilon {
+        T::default_epsilon()
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &Self, epsilon: Self::Epsilon) -> bool {
+        T::abs_diff_eq(&self.into_inner(), &other.into_inner(), epsilon)
+    }
+}
+
+#[cfg(feature = "ordered-float")]
+impl<T: AbsDiffEq + Float> AbsDiffEq<T> for NotNan<T> {
+    type Epsilon = T::Epsilon;
+
+    #[inline]
+    fn default_epsilon() -> Self::Epsilon {
+        T::default_epsilon()
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &T, epsilon: Self::Epsilon) -> bool {
+        T::abs_diff_eq(&self.into_inner(), other, epsilon)
+    }
+}
+
+#[cfg(feature = "ordered-float")]
+impl<T: AbsDiffEq + Float> AbsDiffEq for OrderedFloat<T> {
+    type Epsilon = T::Epsilon;
+
+    #[inline]
+    fn default_epsilon() -> Self::Epsilon {
+        T::default_epsilon()
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &Self, epsilon: Self::Epsilon) -> bool {
+        T::abs_diff_eq(&self.into_inner(), &other.into_inner(), epsilon)
+    }
+}
+
+#[cfg(feature = "ordered-float")]
+impl<T: AbsDiffEq + Float> AbsDiffEq<T> for OrderedFloat<T> {
+    type Epsilon = T::Epsilon;
+
+    #[inline]
+    fn default_epsilon() -> Self::Epsilon {
+        T::default_epsilon()
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &T, epsilon: Self::Epsilon) -> bool {
+        T::abs_diff_eq(&self.into_inner(), other, epsilon)
     }
 }

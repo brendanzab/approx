@@ -187,6 +187,12 @@ mod test_f32 {
         assert_relative_ne!(f32::MIN_POSITIVE, 0.000001f32);
         assert_relative_ne!(-f32::MIN_POSITIVE, 0.000001f32);
     }
+
+    #[test]
+    fn custom_test() {
+        assert_relative_eq!(1.0f64, 1.5f64, max_relative = 0.34);
+        assert_relative_ne!(1.0f64, 1.5f64, max_relative = 0.33);
+    }
 }
 
 #[cfg(test)]
@@ -352,6 +358,12 @@ mod test_f64 {
         assert_relative_ne!(f64::MIN_POSITIVE, 0.000000000000001f64);
         assert_relative_ne!(-f64::MIN_POSITIVE, 0.000000000000001f64);
     }
+
+    #[test]
+    fn custom_test() {
+        assert_relative_eq!(1.0f64, 1.5f64, max_relative = 0.34);
+        assert_relative_ne!(1.0f64, 1.5f64, max_relative = 0.33);
+    }
 }
 
 mod test_ref {
@@ -436,6 +448,64 @@ mod test_complex {
         #[should_panic]
         fn test_basic_panic_ne() {
             assert_relative_ne!(Complex::new(1.0f64, 2.0f64), Complex::new(1.0f64, 2.0f64));
+        }
+    }
+}
+
+#[cfg(feature = "ordered-float")]
+mod test_ordered_float {
+    extern crate ordered_float;
+    pub use self::ordered_float::{NotNan, OrderedFloat};
+
+    mod test_f32 {
+        use super::OrderedFloat;
+
+        #[test]
+        fn test_basic() {
+            assert_relative_eq!(OrderedFloat(1.0f32), OrderedFloat(1.0f32));
+            assert_relative_ne!(OrderedFloat(1.0f32), OrderedFloat(2.0f32));
+            assert_relative_eq!(OrderedFloat(1.0f32), 1.0f32);
+            assert_relative_ne!(OrderedFloat(1.0f32), 2.0f32);
+            assert_relative_eq!(1.0f32, OrderedFloat(1.0f32));
+            assert_relative_ne!(1.0f32, OrderedFloat(2.0f32));
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_basic_panic_eq() {
+            assert_relative_eq!(OrderedFloat(1.0f32), OrderedFloat(2.0f32));
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_basic_panic_ne() {
+            assert_relative_ne!(OrderedFloat(1.0f32), OrderedFloat(1.0f32));
+        }
+    }
+
+    mod test_f64 {
+        use super::OrderedFloat;
+
+        #[test]
+        fn test_basic() {
+            assert_relative_eq!(OrderedFloat(1.0f64), OrderedFloat(1.0f64));
+            assert_relative_ne!(OrderedFloat(1.0f64), OrderedFloat(2.0f64));
+            assert_relative_eq!(OrderedFloat(1.0f64), 1.0f64);
+            assert_relative_ne!(OrderedFloat(1.0f64), 2.0f64);
+            assert_relative_eq!(1.0f64, OrderedFloat(1.0f64));
+            assert_relative_ne!(1.0f64, OrderedFloat(2.0f64));
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_basic_panic_eq() {
+            assert_relative_eq!(OrderedFloat(1.0f64), OrderedFloat(2.0f64));
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_basic_panic_ne() {
+            assert_relative_ne!(OrderedFloat(1.0f64), OrderedFloat(1.0f64));
         }
     }
 }
