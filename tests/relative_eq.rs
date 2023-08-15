@@ -193,10 +193,17 @@ mod test_f32 {
 mod test_f64 {
     use core::f64;
 
+    static ε: f64 = f64::EPSILON;
+
     #[test]
     fn test_basic() {
         assert_relative_eq!(1.0f64, 1.0f64);
         assert_relative_ne!(1.0f64, 2.0f64);
+        assert_relative_eq!(1.0, 1.0);                      // ✅
+        assert_relative_ne!(1.0, 1.1);                      // ❌
+        assert_relative_eq!(1.0, 1.1, max_relative = 0.1);  // ✅
+        assert_relative_eq!(1.1, 1.0, max_relative = 0.1);  // ✅ order doesn't matter: abs(a - b) / max(a, b)
+        assert_relative_ne!(1.0, 1.2, max_relative = 0.1);  // ❌
     }
 
     #[test]
@@ -282,6 +289,17 @@ mod test_f64 {
         assert_relative_ne!(0.0f64, 1e-40f64, epsilon = 1e-41f64);
         assert_relative_ne!(-1e-40f64, 0.0f64, epsilon = 1e-41f64);
         assert_relative_ne!(0.0f64, -1e-40f64, epsilon = 1e-41f64);
+    }
+
+    #[test]
+    fn test_epsilon_combo() {
+        assert_relative_eq!(0., ε, epsilon = ε, max_relative = 0.1);
+        assert_relative_ne!(0., ε + ε, epsilon = ε, max_relative = 0.1);      // ❌ abs (2ε > ε) and relative (1. > 0.1) checks both fail
+        assert_relative_eq!(ε, 4.*ε, epsilon = ε, max_relative = 0.75);       // ✅ relative check passes (3ε/4ε == 0.75)
+        assert_relative_ne!(ε, 4.*ε, epsilon = ε, max_relative = 0.7);        // ❌ abs (3ε > ε) and relative (0.75 > 0.7) checks both fail
+        assert_relative_eq!(ε, 4.*ε, epsilon = 3.*ε, max_relative = 0.7);     // ✅ abs (3ε) check passes
+        assert_relative_ne!(0.0, 1e-6, max_relative = 1e-5);                  // ❌ maximum possible relative diff is 1.0 (when one side is 0)
+        assert_relative_eq!(0.0, 1e-6, epsilon = 1e-5, max_relative = 1e-5);  // ✅ passing `epsilon` allows short-circuiting based on small abs diff
     }
 
     #[test]

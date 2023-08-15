@@ -22,6 +22,8 @@ extern crate approx;
 mod test_f32 {
     use core::f32;
 
+    static ε: f32 = f32::EPSILON;
+
     #[test]
     fn test_basic() {
         assert_abs_diff_eq!(1.0f32, 1.0f32);
@@ -98,6 +100,16 @@ mod test_f32 {
         assert_abs_diff_ne!(0.0f32, 0.000001f32);
         assert_abs_diff_ne!(-0.000001f32, 0.0f32);
         assert_abs_diff_ne!(0.0f32, -0.000001f32);
+    }
+
+    #[test]
+    fn test_default_epsilon() {
+        assert_abs_diff_eq!(1.0f32, 1.0f32 + ε);
+        assert_abs_diff_ne!(1.0f32, 1.0f32 + ε + ε);
+        assert_abs_diff_eq!(1.0f32, 1.0f32 + ε + ε, epsilon = ε + ε);
+        assert_abs_diff_eq!(1.0f32, 1.0f32 - ε);
+        assert_abs_diff_ne!(1.0f32, 1.0f32 - ε - ε);
+        assert_abs_diff_eq!(1.0f32, 1.0f32 - ε - ε, epsilon = ε + ε);
     }
 
     #[test]
@@ -191,6 +203,8 @@ mod test_f32 {
 mod test_f64 {
     use core::f64;
 
+    static ε: f64 = f64::EPSILON;
+
     #[test]
     fn test_basic() {
         assert_abs_diff_eq!(1.0f64, 1.0f64);
@@ -280,6 +294,16 @@ mod test_f64 {
         assert_abs_diff_ne!(0.0f64, 1e-40f64, epsilon = 1e-41f64);
         assert_abs_diff_ne!(-1e-40f64, 0.0f64, epsilon = 1e-41f64);
         assert_abs_diff_ne!(0.0f64, -1e-40f64, epsilon = 1e-41f64);
+    }
+
+    #[test]
+    fn test_default_epsilon() {
+        assert_abs_diff_eq!(1.0, 1.0 + ε);
+        assert_abs_diff_ne!(1.0, 1.0 + ε + ε);
+        assert_abs_diff_eq!(1.0, 1.0 + ε + ε, epsilon = ε + ε);
+        assert_abs_diff_eq!(1.0, 1.0 - ε);
+        assert_abs_diff_ne!(1.0, 1.0 - ε - ε);
+        assert_abs_diff_eq!(1.0, 1.0 - ε - ε, epsilon = ε + ε);
     }
 
     #[test]

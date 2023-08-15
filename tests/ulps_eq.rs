@@ -193,6 +193,11 @@ mod test_f64 {
     fn test_basic() {
         assert_ulps_eq!(1.0f64, 1.0f64);
         assert_ulps_ne!(1.0f64, 2.0f64);
+
+        assert_ulps_eq!(1., 1. + 1e-17);                // ✅ default: max_ulps = 4
+        assert_ulps_eq!(1., 1. + 1e-16);                // ✅ ""
+        assert_ulps_ne!(1., 1. + 1e-15);                // ❌
+        assert_ulps_eq!(1., 1. + 1e-15, max_ulps = 5);  // ✅ relaxed max_ulps
     }
 
     #[test]

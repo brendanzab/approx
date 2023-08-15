@@ -26,22 +26,28 @@
 //! use std::f64;
 //!
 //! # fn main() {
-//! abs_diff_eq!(1.0, 1.0);
-//! abs_diff_eq!(1.0, 1.0, epsilon = f64::EPSILON);
+//! static ε: f64 = f64::EPSILON;
+//! assert_abs_diff_eq!(1.0, 1.0);                        // ✅
+//! assert_abs_diff_eq!(1.0, 1.0 + ε);                    // ✅ default: epsilon = f64::EPSILON
+//! assert_abs_diff_ne!(1.0, 1.0 + ε+ε);                  // ❌ diff (2ε) exceeds default (ε); assert "ne" instead of "eq"
+//! assert_abs_diff_eq!(1.0, 1.0 + ε+ε, epsilon = ε+ε);   // ✅ diff (2ε) ≤ "epsilon" param (2ε)
 //!
-//! relative_eq!(1.0, 1.0);
-//! relative_eq!(1.0, 1.0, epsilon = f64::EPSILON);
-//! relative_eq!(1.0, 1.0, max_relative = 1.0);
-//! relative_eq!(1.0, 1.0, epsilon = f64::EPSILON, max_relative = 1.0);
-//! relative_eq!(1.0, 1.0, max_relative = 1.0, epsilon = f64::EPSILON);
+//! assert_relative_eq!(1.0, 1.0);                        // ✅ compare abs(a - b) / max(a, b) to default (f64::EPSILON)
+//! assert_relative_ne!(1.0, 1.1);                        // ❌ 0.1/1.1 ≥ ε (assert "ne" instead of "eq")
+//! assert_relative_eq!(1.0, 1.1, max_relative = 0.1);    // ✅ 0.1/1.1 < 0.1
+//! assert_relative_eq!(1.1, 1.0, max_relative = 0.1);    // ✅ order doesn't matter, cmp is commutative
+//! assert_relative_ne!(1.0, 1.2, max_relative = 0.1);    // ❌ 0.2/1.2 > 0.1
+//! assert_relative_ne!(0.0, 1e-6, max_relative = 1e-5);  // ❌ maximum possible relative diff is 1.0 (when one side is 0)
+//! assert_relative_eq!(0.0, 1e-6, epsilon = 1e-5, max_relative = 1e-5);  // ✅ passing `epsilon` allows short-circuiting based on small abs diff
 //!
-//! ulps_eq!(1.0, 1.0);
-//! ulps_eq!(1.0, 1.0, epsilon = f64::EPSILON);
-//! ulps_eq!(1.0, 1.0, max_ulps = 4);
-//! ulps_eq!(1.0, 1.0, epsilon = f64::EPSILON, max_ulps = 4);
-//! ulps_eq!(1.0, 1.0, max_ulps = 4, epsilon = f64::EPSILON);
+//! assert_ulps_eq!(1., 1. + 1e-17);                // ✅ default: max_ulps = 4
+//! assert_ulps_eq!(1., 1. + 1e-16);                // ✅ ""
+//! assert_ulps_ne!(1., 1. + 1e-15);                // ❌ assert "ne" instead of "eq"
+//! assert_ulps_eq!(1., 1. + 1e-15, max_ulps = 5);  // ✅ relaxed max_ulps
 //! # }
 //! ```
+//!
+//! See also the [`abs_diff_eq!`](AbsDiffEq::abs_diff_eq), [`relative_eq!`](RelativeEq::relative_eq) and [`ulps_eq!`](UlpsEq::ulps_eq) macros, which return [`bool`] instead of [`assert`]ing.
 //!
 //! # Implementing approximate equality for custom types
 //!
