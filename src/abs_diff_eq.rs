@@ -183,3 +183,21 @@ where
             && T::abs_diff_eq(&self.im, &other.im, epsilon)
     }
 }
+
+impl<A, B, const N: usize> AbsDiffEq<[B; N]> for [A; N]
+where
+    A: AbsDiffEq<B>,
+    A::Epsilon: Clone,
+{
+    type Epsilon = A::Epsilon;
+
+    #[inline]
+    fn default_epsilon() -> Self::Epsilon {
+        A::default_epsilon()
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &[B; N], epsilon: Self::Epsilon) -> bool {
+        Iterator::zip(self.iter(), other).all(|(x, y)| A::abs_diff_eq(x, y, epsilon.clone()))
+    }
+}
