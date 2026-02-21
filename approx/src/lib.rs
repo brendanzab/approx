@@ -113,6 +113,7 @@
 //! #     }
 //! # }
 //! # impl<T: RelativeEq> RelativeEq for Complex<T> where T::Epsilon: Copy {
+//! #     fn default_relative_epsilon() -> T::Epsilon { T::default_relative_epsilon() }
 //! #     fn default_max_relative() -> T::Epsilon { T::default_max_relative() }
 //! #     fn relative_eq(&self, other: &Self, epsilon: T::Epsilon, max_relative: T::Epsilon)
 //! #                   -> bool {
@@ -163,6 +164,10 @@
 //! impl<T: RelativeEq> RelativeEq for Complex<T> where
 //!     T::Epsilon: Copy,
 //! {
+//!     fn default_relative_epsilon() -> T::Epsilon {
+//!         T::default_relative_epsilon()
+//!     }
+//!
 //!     fn default_max_relative() -> T::Epsilon {
 //!         T::default_max_relative()
 //!     }
@@ -339,7 +344,7 @@ where
     #[inline]
     fn default() -> Relative<A, B> {
         Relative {
-            epsilon: A::default_epsilon(),
+            epsilon: A::default_relative_epsilon(),
             max_relative: A::default_max_relative(),
         }
     }

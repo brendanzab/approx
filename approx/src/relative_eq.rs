@@ -37,6 +37,12 @@ pub trait RelativeEq<Rhs = Self>: AbsDiffEq<Rhs>
 where
     Rhs: ?Sized,
 {
+    /// The default epsilon for testing values that are close to zero
+    ///
+    /// This is used when no `epsilon` value is supplied to the
+    /// [`relative_eq`](crate::relative_eq) macro.
+    fn default_relative_epsilon() -> Self::Epsilon;
+
     /// The default relative tolerance for testing values that are far-apart.
     ///
     /// This is used when no `max_relative` value is supplied to the
@@ -67,6 +73,11 @@ where
 macro_rules! impl_relative_eq {
     ($T:ident) => {
         impl RelativeEq for $T {
+            #[inline]
+            fn default_relative_epsilon() -> $T {
+                $T::EPSILON
+            }
+
             #[inline]
             fn default_max_relative() -> $T {
                 $T::EPSILON
@@ -118,6 +129,11 @@ impl_relative_eq!(f64);
 
 impl<T: RelativeEq> RelativeEq for Option<T> {
     #[inline]
+    fn default_relative_epsilon() -> T::Epsilon {
+        T::default_relative_epsilon()
+    }
+
+    #[inline]
     fn default_max_relative() -> T::Epsilon {
         T::default_max_relative()
     }
@@ -138,6 +154,11 @@ impl<T: RelativeEq> RelativeEq for Option<T> {
 }
 
 impl<T: RelativeEq, E: RelativeEq> RelativeEq for Result<T, E> {
+    #[inline]
+    fn default_relative_epsilon() -> (T::Epsilon, E::Epsilon) {
+        (T::default_relative_epsilon(), E::default_relative_epsilon())
+    }
+
     #[inline]
     fn default_max_relative() -> (T::Epsilon, E::Epsilon) {
         (T::default_max_relative(), E::default_max_relative())
@@ -160,6 +181,11 @@ impl<T: RelativeEq, E: RelativeEq> RelativeEq for Result<T, E> {
 
 impl<'a, T: RelativeEq + ?Sized> RelativeEq for &'a T {
     #[inline]
+    fn default_relative_epsilon() -> T::Epsilon {
+        T::default_relative_epsilon()
+    }
+
+    #[inline]
     fn default_max_relative() -> T::Epsilon {
         T::default_max_relative()
     }
@@ -171,6 +197,11 @@ impl<'a, T: RelativeEq + ?Sized> RelativeEq for &'a T {
 }
 
 impl<'a, T: RelativeEq + ?Sized> RelativeEq for &'a mut T {
+    #[inline]
+    fn default_relative_epsilon() -> T::Epsilon {
+        T::default_relative_epsilon()
+    }
+
     #[inline]
     fn default_max_relative() -> T::Epsilon {
         T::default_max_relative()
@@ -189,6 +220,11 @@ impl<'a, T: RelativeEq + ?Sized> RelativeEq for &'a mut T {
 
 impl<T: RelativeEq + Copy> RelativeEq for cell::Cell<T> {
     #[inline]
+    fn default_relative_epsilon() -> T::Epsilon {
+        T::default_relative_epsilon()
+    }
+
+    #[inline]
     fn default_max_relative() -> T::Epsilon {
         T::default_max_relative()
     }
@@ -205,6 +241,11 @@ impl<T: RelativeEq + Copy> RelativeEq for cell::Cell<T> {
 }
 
 impl<T: RelativeEq + ?Sized> RelativeEq for cell::RefCell<T> {
+    #[inline]
+    fn default_relative_epsilon() -> T::Epsilon {
+        T::default_relative_epsilon()
+    }
+
     #[inline]
     fn default_max_relative() -> T::Epsilon {
         T::default_max_relative()
@@ -227,6 +268,11 @@ where
     A::Epsilon: Clone,
 {
     #[inline]
+    fn default_relative_epsilon() -> A::Epsilon {
+        A::default_relative_epsilon()
+    }
+
+    #[inline]
     fn default_max_relative() -> A::Epsilon {
         A::default_max_relative()
     }
@@ -246,6 +292,11 @@ where
     A: RelativeEq<B>,
     A::Epsilon: Clone,
 {
+    #[inline]
+    fn default_relative_epsilon() -> A::Epsilon {
+        A::default_relative_epsilon()
+    }
+
     #[inline]
     fn default_max_relative() -> A::Epsilon {
         A::default_max_relative()
@@ -267,6 +318,11 @@ where
     A::Epsilon: Clone,
 {
     #[inline]
+    fn default_relative_epsilon() -> A::Epsilon {
+        A::default_relative_epsilon()
+    }
+
+    #[inline]
     fn default_max_relative() -> A::Epsilon {
         A::default_max_relative()
     }
@@ -284,6 +340,10 @@ where
 macro_rules! impl_relative_eq {
     () => {
         impl RelativeEq for () {
+            fn default_relative_epsilon() -> Self::Epsilon {
+                ()
+            }
+
             fn default_max_relative() -> Self::Epsilon {
                 ()
             }
@@ -305,6 +365,10 @@ macro_rules! impl_relative_eq {
             where
                 $( [<T $idx>]: RelativeEq, )+
             {
+                fn default_relative_epsilon() -> Self::Epsilon {
+                    ($( [<T $idx>]::default_relative_epsilon(), )+)
+                }
+
                 fn default_max_relative() -> Self::Epsilon {
                     ($( [<T $idx>]::default_max_relative(), )+)
                 }
@@ -349,6 +413,11 @@ where
     T::Epsilon: Clone,
 {
     #[inline]
+    fn default_relative_epsilon() -> T::Epsilon {
+        T::default_relative_epsilon()
+    }
+
+    #[inline]
     fn default_max_relative() -> T::Epsilon {
         T::default_max_relative()
     }
@@ -368,6 +437,11 @@ where
 #[cfg(feature = "ordered_float")]
 #[cfg_attr(docsrs, doc(cfg(feature = "ordered_float")))]
 impl<T: RelativeEq + Copy> RelativeEq for NotNan<T> {
+    #[inline]
+    fn default_relative_epsilon() -> Self::Epsilon {
+        T::default_relative_epsilon()
+    }
+
     #[inline]
     fn default_max_relative() -> Self::Epsilon {
         T::default_max_relative()
@@ -393,6 +467,11 @@ impl<T: RelativeEq + Copy> RelativeEq for NotNan<T> {
 #[cfg_attr(docsrs, doc(cfg(feature = "ordered_float")))]
 impl<T: RelativeEq + Float + ordered_float::FloatCore> RelativeEq<T> for NotNan<T> {
     #[inline]
+    fn default_relative_epsilon() -> Self::Epsilon {
+        T::default_relative_epsilon()
+    }
+
+    #[inline]
     fn default_max_relative() -> Self::Epsilon {
         T::default_max_relative()
     }
@@ -406,6 +485,11 @@ impl<T: RelativeEq + Float + ordered_float::FloatCore> RelativeEq<T> for NotNan<
 #[cfg(feature = "ordered_float")]
 #[cfg_attr(docsrs, doc(cfg(feature = "ordered_float")))]
 impl<T: RelativeEq + Float + ordered_float::FloatCore> RelativeEq for OrderedFloat<T> {
+    #[inline]
+    fn default_relative_epsilon() -> Self::Epsilon {
+        T::default_relative_epsilon()
+    }
+
     #[inline]
     fn default_max_relative() -> Self::Epsilon {
         T::default_max_relative()
@@ -431,6 +515,11 @@ impl<T: RelativeEq + Float + ordered_float::FloatCore> RelativeEq for OrderedFlo
 #[cfg_attr(docsrs, doc(cfg(feature = "ordered_float")))]
 impl<T: RelativeEq + Float + ordered_float::FloatCore> RelativeEq<T> for OrderedFloat<T> {
     #[inline]
+    fn default_relative_epsilon() -> Self::Epsilon {
+        T::default_relative_epsilon()
+    }
+
+    #[inline]
     fn default_max_relative() -> Self::Epsilon {
         T::default_max_relative()
     }
@@ -451,6 +540,11 @@ where
     S1: BuildHasher,
     S2: BuildHasher,
 {
+    #[inline]
+    fn default_relative_epsilon() -> V1::Epsilon {
+        V1::default_relative_epsilon()
+    }
+
     #[inline]
     fn default_max_relative() -> V1::Epsilon {
         V1::default_max_relative()
