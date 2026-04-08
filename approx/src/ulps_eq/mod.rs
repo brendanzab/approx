@@ -1,3 +1,8 @@
+mod tuples;
+mod trait_def;
+
+pub use trait_def::UlpsEq;
+use super::AbsDiffEq;
 #[cfg(feature = "vec_impl")]
 use alloc::vec::Vec;
 use core::cell;
@@ -13,27 +18,8 @@ use num_traits::Signed;
 #[cfg(feature = "ordered_float")]
 use ordered_float::{NotNan, OrderedFloat};
 
-use crate::AbsDiffEq;
 
-/// Equality comparisons between two numbers using both the absolute difference and ULPs
-/// (Units in Last Place) based comparisons.
-pub trait UlpsEq<Rhs = Self>: AbsDiffEq<Rhs>
-where
-    Rhs: ?Sized,
-{
-    /// The default ULPs to tolerate when testing values that are far-apart.
-    ///
-    /// This is used when no `max_ulps` value is supplied to the [`ulps_eq`](crate::ulps_eq) macro.
-    fn default_max_ulps() -> u32;
 
-    /// A test for equality that uses units in the last place (ULP) if the values are far apart.
-    fn ulps_eq(&self, other: &Rhs, epsilon: Self::Epsilon, max_ulps: u32) -> bool;
-
-    /// The inverse of [`UlpsEq::ulps_eq`].
-    fn ulps_ne(&self, other: &Rhs, epsilon: Self::Epsilon, max_ulps: u32) -> bool {
-        !Self::ulps_eq(self, other, epsilon, max_ulps)
-    }
-}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Base implementations
@@ -227,68 +213,7 @@ where
     }
 }
 
-#[cfg(feature = "tuple_impl")]
-#[cfg_attr(docsrs, doc(cfg(feature = "tuple_impl")))]
-macro_rules! impl_ulps_eq {
-    () => {
-        impl UlpsEq for () {
-            fn default_max_ulps() -> u32 {
-                0
-            }
 
-            fn ulps_eq(
-                &self,
-                _other: &Self,
-                _epsilon: Self::Epsilon,
-                _max_ulps: u32,
-            ) -> bool {
-                true
-            }
-        }
-    };
-
-    ($($idx:tt),+) => {
-        paste::paste! {
-            impl<$( [<T $idx>], )+> UlpsEq for ($( [<T $idx>], )+)
-            where
-                $( [<T $idx>]: UlpsEq, )+
-            {
-                fn default_max_ulps() -> u32 {
-                    0 $( .max([<T $idx>]::default_max_ulps()) )+
-                }
-
-                fn ulps_eq(
-                    &self,
-                    other: &Self,
-                    epsilon: Self::Epsilon,
-                    max_ulps: u32
-                ) -> bool {
-                    true $( && self.$idx.ulps_eq(&other.$idx, epsilon.$idx, max_ulps) )+
-                }
-            }
-        }
-    };
-}
-
-#[cfg(feature = "tuple_impl")]
-#[cfg_attr(docsrs, doc(cfg(feature = "tuple_impl")))]
-mod ulps_eq_tuple_impls {
-    use super::*;
-
-    impl_ulps_eq!();
-    impl_ulps_eq!(0);
-    impl_ulps_eq!(0, 1);
-    impl_ulps_eq!(0, 1, 2);
-    impl_ulps_eq!(0, 1, 2, 3);
-    impl_ulps_eq!(0, 1, 2, 3, 4);
-    impl_ulps_eq!(0, 1, 2, 3, 4, 5);
-    impl_ulps_eq!(0, 1, 2, 3, 4, 5, 6);
-    impl_ulps_eq!(0, 1, 2, 3, 4, 5, 6, 7);
-    impl_ulps_eq!(0, 1, 2, 3, 4, 5, 6, 7, 8);
-    impl_ulps_eq!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
-    impl_ulps_eq!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-    impl_ulps_eq!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
-}
 
 #[cfg(feature = "num_complex")]
 #[cfg_attr(docsrs, doc(cfg(feature = "num_complex")))]
