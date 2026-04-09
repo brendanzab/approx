@@ -1,4 +1,3 @@
-
 use crate::AbsDiffEq;
 
 /// Equality comparisons between two numbers using both the absolute difference and ULPs
