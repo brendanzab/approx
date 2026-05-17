@@ -75,7 +75,7 @@ macro_rules! impl_relative_eq {
         impl RelativeEq for $T {
             #[inline]
             fn default_relative_epsilon() -> $T {
-                $T::EPSILON
+                $T::MIN_POSITIVE
             }
 
             #[inline]
