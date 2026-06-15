@@ -232,6 +232,7 @@ impl AbsDiffEqParser {
 
     pub fn implement_derive_rel_diff_eq(&self) -> proc_macro2::TokenStream {
         let obj_name = &self.base_type.ident();
+        let epsilon_type = self.get_epsilon_parent_type();
         let max_relative_default_value = self.get_max_relative_default_value();
 
         let (impl_generics, ty_generics, _) = self.base_type.generics().split_for_impl();
@@ -251,6 +252,10 @@ impl AbsDiffEqParser {
                         impl #impl_generics #ApproxName::RelativeEq for #obj_name #ty_generics
                         #where_clause
                         {
+                            fn default_relative_epsilon() -> Self::Epsilon {
+                                <#epsilon_type as #ApproxName::RelativeEq>::default_relative_epsilon()
+                            }
+
                             fn default_max_relative() -> Self::Epsilon {
                                 #max_relative_default_value
                             }
@@ -280,6 +285,10 @@ impl AbsDiffEqParser {
                         impl #impl_generics #ApproxName::RelativeEq for #obj_name #ty_generics
                         #where_clause
                         {
+                            fn default_relative_epsilon() -> Self::Epsilon {
+                                <#epsilon_type as #ApproxName::RelativeEq>::default_relative_epsilon()
+                            }
+
                             fn default_max_relative() -> Self::Epsilon {
                                 #max_relative_default_value
                             }
