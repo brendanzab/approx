@@ -99,7 +99,6 @@ macro_rules! impl_signed_abs_diff_eq {
             #[inline]
             #[allow(unused_imports)]
             fn abs_diff_eq(&self, other: &$T, epsilon: $T) -> bool {
-                use num_traits::float::FloatCore;
                 $T::abs(self - other) <= epsilon
             }
         }

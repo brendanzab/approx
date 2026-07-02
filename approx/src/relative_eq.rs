@@ -86,7 +86,6 @@ macro_rules! impl_relative_eq {
             #[inline]
             #[allow(unused_imports)]
             fn relative_eq(&self, other: &$T, epsilon: $T, max_relative: $T) -> bool {
-                use num_traits::float::FloatCore;
                 // Handle same infinities
                 if self == other {
                     return true;
