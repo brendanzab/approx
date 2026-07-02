@@ -321,7 +321,7 @@ impl<T: UlpsEq + Copy> UlpsEq for NotNan<T> {
 
 #[cfg(feature = "ordered_float")]
 #[cfg_attr(docsrs, doc(cfg(feature = "ordered_float")))]
-impl<T: UlpsEq + Float + ordered_float::FloatCore> UlpsEq<T> for NotNan<T> {
+impl<T: UlpsEq + ordered_float::FloatCore> UlpsEq<T> for NotNan<T> {
     #[inline]
     fn default_max_ulps() -> u32 {
         T::default_max_ulps()
@@ -335,7 +335,7 @@ impl<T: UlpsEq + Float + ordered_float::FloatCore> UlpsEq<T> for NotNan<T> {
 
 #[cfg(feature = "ordered_float")]
 #[cfg_attr(docsrs, doc(cfg(feature = "ordered_float")))]
-impl<T: UlpsEq + Float + ordered_float::FloatCore> UlpsEq for OrderedFloat<T> {
+impl<T: UlpsEq + ordered_float::FloatCore> UlpsEq for OrderedFloat<T> {
     #[inline]
     fn default_max_ulps() -> u32 {
         T::default_max_ulps()
@@ -349,7 +349,7 @@ impl<T: UlpsEq + Float + ordered_float::FloatCore> UlpsEq for OrderedFloat<T> {
 
 #[cfg(feature = "ordered_float")]
 #[cfg_attr(docsrs, doc(cfg(feature = "ordered_float")))]
-impl<T: UlpsEq + Float + ordered_float::FloatCore> UlpsEq<T> for OrderedFloat<T> {
+impl<T: UlpsEq + ordered_float::FloatCore> UlpsEq<T> for OrderedFloat<T> {
     #[inline]
     fn default_max_ulps() -> u32 {
         T::default_max_ulps()

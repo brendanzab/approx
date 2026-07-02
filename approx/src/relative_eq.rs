@@ -10,8 +10,6 @@ use indexmap::IndexMap;
 use num_complex::Complex;
 
 #[cfg(feature = "ordered_float")]
-use num_traits::Float;
-#[cfg(feature = "ordered_float")]
 use ordered_float::{NotNan, OrderedFloat};
 
 /// Equality comparisons between two numbers using both the absolute difference and
@@ -464,7 +462,7 @@ impl<T: RelativeEq + Copy> RelativeEq for NotNan<T> {
 
 #[cfg(feature = "ordered_float")]
 #[cfg_attr(docsrs, doc(cfg(feature = "ordered_float")))]
-impl<T: RelativeEq + Float + ordered_float::FloatCore> RelativeEq<T> for NotNan<T> {
+impl<T: RelativeEq + ordered_float::FloatCore> RelativeEq<T> for NotNan<T> {
     #[inline]
     fn default_relative_epsilon() -> Self::Epsilon {
         T::default_relative_epsilon()
@@ -483,7 +481,7 @@ impl<T: RelativeEq + Float + ordered_float::FloatCore> RelativeEq<T> for NotNan<
 
 #[cfg(feature = "ordered_float")]
 #[cfg_attr(docsrs, doc(cfg(feature = "ordered_float")))]
-impl<T: RelativeEq + Float + ordered_float::FloatCore> RelativeEq for OrderedFloat<T> {
+impl<T: RelativeEq + ordered_float::FloatCore> RelativeEq for OrderedFloat<T> {
     #[inline]
     fn default_relative_epsilon() -> Self::Epsilon {
         T::default_relative_epsilon()
@@ -512,7 +510,7 @@ impl<T: RelativeEq + Float + ordered_float::FloatCore> RelativeEq for OrderedFlo
 
 #[cfg(feature = "ordered_float")]
 #[cfg_attr(docsrs, doc(cfg(feature = "ordered_float")))]
-impl<T: RelativeEq + Float + ordered_float::FloatCore> RelativeEq<T> for OrderedFloat<T> {
+impl<T: RelativeEq + ordered_float::FloatCore> RelativeEq<T> for OrderedFloat<T> {
     #[inline]
     fn default_relative_epsilon() -> Self::Epsilon {
         T::default_relative_epsilon()
