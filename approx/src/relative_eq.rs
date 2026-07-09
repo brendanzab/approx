@@ -10,8 +10,6 @@ use indexmap::IndexMap;
 use num_complex::Complex;
 
 #[cfg(feature = "ordered_float")]
-use num_traits::Float;
-#[cfg(feature = "ordered_float")]
 use ordered_float::{NotNan, OrderedFloat};
 
 /// Equality comparisons between two numbers using both the absolute difference and
@@ -86,7 +84,6 @@ macro_rules! impl_relative_eq {
             #[inline]
             #[allow(unused_imports)]
             fn relative_eq(&self, other: &$T, epsilon: $T, max_relative: $T) -> bool {
-                use num_traits::float::FloatCore;
                 // Handle same infinities
                 if self == other {
                     return true;
@@ -465,7 +462,7 @@ impl<T: RelativeEq + Copy> RelativeEq for NotNan<T> {
 
 #[cfg(feature = "ordered_float")]
 #[cfg_attr(docsrs, doc(cfg(feature = "ordered_float")))]
-impl<T: RelativeEq + Float + ordered_float::FloatCore> RelativeEq<T> for NotNan<T> {
+impl<T: RelativeEq + ordered_float::FloatCore> RelativeEq<T> for NotNan<T> {
     #[inline]
     fn default_relative_epsilon() -> Self::Epsilon {
         T::default_relative_epsilon()
@@ -484,7 +481,7 @@ impl<T: RelativeEq + Float + ordered_float::FloatCore> RelativeEq<T> for NotNan<
 
 #[cfg(feature = "ordered_float")]
 #[cfg_attr(docsrs, doc(cfg(feature = "ordered_float")))]
-impl<T: RelativeEq + Float + ordered_float::FloatCore> RelativeEq for OrderedFloat<T> {
+impl<T: RelativeEq + ordered_float::FloatCore> RelativeEq for OrderedFloat<T> {
     #[inline]
     fn default_relative_epsilon() -> Self::Epsilon {
         T::default_relative_epsilon()
@@ -513,7 +510,7 @@ impl<T: RelativeEq + Float + ordered_float::FloatCore> RelativeEq for OrderedFlo
 
 #[cfg(feature = "ordered_float")]
 #[cfg_attr(docsrs, doc(cfg(feature = "ordered_float")))]
-impl<T: RelativeEq + Float + ordered_float::FloatCore> RelativeEq<T> for OrderedFloat<T> {
+impl<T: RelativeEq + ordered_float::FloatCore> RelativeEq<T> for OrderedFloat<T> {
     #[inline]
     fn default_relative_epsilon() -> Self::Epsilon {
         T::default_relative_epsilon()

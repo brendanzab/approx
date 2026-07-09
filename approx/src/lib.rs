@@ -226,7 +226,6 @@
 #[cfg(feature = "num_complex")]
 #[cfg_attr(docsrs, doc(cfg(feature = "num_complex")))]
 extern crate num_complex;
-extern crate num_traits;
 #[cfg(feature = "ordered_float")]
 #[cfg_attr(docsrs, doc(cfg(feature = "ordered_float")))]
 extern crate ordered_float;
